@@ -141,8 +141,8 @@ const heading = lang === 'it' ? 'Case Study' : 'Case Studies';
     opacity: 0;
     transform: translateY(100%);
     transition:
-      opacity 0.3s ease-in-out,
-      transform 0.3s ease-in-out;
+      opacity var(--gara-duration) var(--gara-ease),
+      transform var(--gara-duration) var(--gara-ease);
   }
 
   .gara-studies__item:hover .gara-studies__rollover,
@@ -167,6 +167,30 @@ const heading = lang === 'it' ? 'Case Study' : 'Case Studies';
     font-size: 13px;
     color: rgba(255, 255, 255, 0.9);
     text-align: center;
+  }
+
+  @media (hover: none) {
+    .gara-studies__rollover {
+      inset: auto 0 0;
+      justify-content: flex-end;
+      padding: 12px 14px;
+      opacity: 1;
+      transform: none;
+      background: linear-gradient(
+        to top,
+        color-mix(in srgb, var(--gara-cs-color, #96c222) 92%, #000 8%),
+        color-mix(in srgb, var(--gara-cs-color, #96c222) 75%, transparent)
+      );
+    }
+
+    .gara-studies__item-title {
+      font-size: 18px;
+      line-height: 26px;
+    }
+
+    .gara-studies__cat {
+      font-size: 12px;
+    }
   }
 
   @media (max-width: 900px) {

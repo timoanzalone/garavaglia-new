@@ -30,8 +30,10 @@
   --color-edu: var(--gara-edu);
 }
 
-html {
-  scroll-behavior: smooth;
+@media (prefers-reduced-motion: no-preference) {
+  html {
+    scroll-behavior: smooth;
+  }
 }
 
 body {
@@ -40,6 +42,16 @@ body {
   line-height: var(--gara-leading-body);
   color: var(--gara-text);
   background: var(--gara-page);
+}
+
+:focus-visible {
+  outline: 2px solid var(--gara-brand);
+  outline-offset: 3px;
+}
+
+a:focus:not(:focus-visible),
+button:focus:not(:focus-visible) {
+  outline: none;
 }
 
 h1,

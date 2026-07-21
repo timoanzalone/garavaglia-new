@@ -16,12 +16,63 @@ const note = t(lang).stubNote;
 
 <Layout title={`${heading} - Garavaglia`} lang={lang}>
   <Header lang={lang} />
-  <main class="min-h-[50vh] py-20">
-    <div class="max-w-[800px] mx-auto px-5">
-      <h1 class="font-heading text-4xl text-[#222] mb-4">{heading}</h1>
-      <p class="text-[#666]">{note}</p>
+  <main class="gara-stub">
+    <div class="gara-stub__inner">
+      <h1 class="gara-stub__title">{heading}</h1>
+      <div class="gara-stub__sep" aria-hidden="true"></div>
+      <p class="gara-stub__note">{note}</p>
       <slot />
     </div>
   </main>
   <Footer lang={lang} />
 </Layout>
+
+<style>
+  .gara-stub {
+    min-height: 50vh;
+    padding: 80px 30px 100px;
+    background: var(--gara-page);
+  }
+
+  .gara-stub__inner {
+    max-width: 800px;
+    margin: 0 auto;
+  }
+
+  .gara-stub__title {
+    margin: 0 0 20px;
+    padding: 0;
+    font-family: var(--gara-font-heading);
+    font-size: 36px;
+    font-weight: 400;
+    line-height: 1.2;
+    color: var(--gara-text-strong);
+  }
+
+  .gara-stub__sep {
+    width: 80px;
+    max-width: 100%;
+    height: 3px;
+    margin: 0 0 24px;
+    background: var(--gara-brand);
+  }
+
+  .gara-stub__note {
+    margin: 0 0 20px;
+    padding: 0;
+    font-family: var(--gara-font-body);
+    font-size: var(--gara-text-body);
+    line-height: var(--gara-leading-body);
+    color: var(--gara-text);
+  }
+
+  @media (max-width: 800px) {
+    .gara-stub {
+      padding: 60px 20px 80px;
+    }
+
+    .gara-stub__title {
+      font-size: 28px;
+    }
+  }
+</style>

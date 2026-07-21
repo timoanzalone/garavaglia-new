@@ -28,7 +28,7 @@ export const ui: Record<Locale, UiStrings> = {
     client: 'Cliente:',
     privacyPolicy: 'Privacy Policy',
     cookiePolicy: 'Cookie Policy',
-    footerNotice: 'Garavaglia | P.IVA IT03085820961 | 2022 |',
+    footerNotice: 'Garavaglia | P.IVA IT03085820961 | {year} |',
     metaDescription:
       'Progettazione e realizzazione di grandi scenografie, parchi tematici, baby parking, allestimenti natalizi per centri commerciali, visual marketing e stand fieristici',
   },
@@ -43,7 +43,7 @@ export const ui: Record<Locale, UiStrings> = {
     client: 'Client:',
     privacyPolicy: 'Privacy Policy',
     cookiePolicy: 'Cookie Policy',
-    footerNotice: 'Garavaglia | VAT IT03085820961 | 2022 |',
+    footerNotice: 'Garavaglia | VAT IT03085820961 | {year} |',
     metaDescription:
       'Design and creation of large scenographies, theme parks, Christmas installations for shopping centers, visual marketing and trade show stands.',
   },

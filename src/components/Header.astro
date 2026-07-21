@@ -1,6 +1,7 @@
 ---
 /**
  * Header — measured from garavaglia.test (1920 viewport), 2026-07-21
+ * Light refresh: sticky + scroll shadow, active nav underline bar.
  *
  * Measured:
  * - .fusion-header: h=84px, bg=#fff, padding=0 30px, no border, no shadow
@@ -11,9 +12,8 @@
  * - li padding-right: 30px; link height 84px; flex align center
  * - caret: FA chevron (~9×17), color #000
  * - active lang (current): #333; others #000
- * - header in document flow (not fixed at rest)
  */
-import { navByLang } from '../data/site';
+import { navByLang, type NavItem } from '../data/site';
 import { homePath, switchLocalePath, t, type Locale } from '../i18n';
 
 interface Props {
@@ -26,9 +26,42 @@ const labels = t(lang);
 const switchHref = switchLocalePath(lang, Astro.url.pathname + Astro.url.hash);
 const itHref = lang === 'it' ? Astro.url.pathname : switchHref;
 const enHref = lang === 'en' ? Astro.url.pathname : switchHref;
+
+const pathname = Astro.url.pathname.replace(/\/$/, '') || '/';
+
+function cleanHref(href: string) {
+  return href.split('#')[0].replace(/\/$/, '') || '/';
+}
+
+function navItemIsActive(item: NavItem): boolean {
+  const href = cleanHref(item.href);
+
+  if (pathname === href) return true;
+
+  if (
+    item.children?.some((child) => {
+      const childHref = cleanHref(child.href);
+      return pathname === childHref || pathname.startsWith(`${childHref}/`);
+    })
+  ) {
+    return true;
+  }
+
+  if (href !== '/' && pathname.startsWith(`${href}/`)) return true;
+
+  // Portfolio detail pages sit under Case Study
+  if (
+    (href === '/case-studies' || href === '/en/case-studies') &&
+    (pathname.startsWith('/portfolio') || pathname.startsWith('/en/portfolio'))
+  ) {
+    return true;
+  }
+
+  return false;
+}
 ---
 
-<header class="gara-header">
+<header class="gara-header" id="site-header">
   <div class="gara-header__bar">
     <div class="gara-header__row">
       <div class="gara-header__logo">
@@ -45,29 +78,36 @@ const enHref = lang === 'en' ? Astro.url.pathname : switchHref;
 
       <nav class="gara-header__nav" aria-label={labels.mainMenu}>
         <ul class="gara-header__menu">
-          {items.map((item) => (
-            <li class:list={['gara-header__item', { 'has-children': !!item.children }]}>
-              <a href={item.href} class="gara-header__link">
-                <span class="menu-text">{item.label}</span>
+          {items.map((item) => {
+            const active = navItemIsActive(item);
+            return (
+              <li class:list={['gara-header__item', { 'has-children': !!item.children, 'is-active': active }]}>
+                <a
+                  href={item.href}
+                  class:list={['gara-header__link', { 'is-active': active }]}
+                  aria-current={active ? 'page' : undefined}
+                >
+                  <span class="menu-text">{item.label}</span>
+                  {item.children && (
+                    <span class="gara-header__caret" aria-hidden="true">
+                      <svg width="9" height="6" viewBox="0 0 9 6" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M1 1.25L4.5 4.75L8 1.25" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
+                      </svg>
+                    </span>
+                  )}
+                </a>
                 {item.children && (
-                  <span class="gara-header__caret" aria-hidden="true">
-                    <svg width="9" height="6" viewBox="0 0 9 6" fill="none" xmlns="http://www.w3.org/2000/svg">
-                      <path d="M1 1.25L4.5 4.75L8 1.25" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
-                    </svg>
-                  </span>
+                  <ul class="gara-header__sub">
+                    {item.children.map((child) => (
+                      <li>
+                        <a href={child.href}>{child.label}</a>
+                      </li>
+                    ))}
+                  </ul>
                 )}
-              </a>
-              {item.children && (
-                <ul class="gara-header__sub">
-                  {item.children.map((child) => (
-                    <li>
-                      <a href={child.href}>{child.label}</a>
-                    </li>
-                  ))}
-                </ul>
-              )}
-            </li>
-          ))}
+              </li>
+            );
+          })}
           <li class="gara-header__item">
             <a href={itHref} class:list={['gara-header__link', { 'is-current': lang === 'it' }]} hreflang="it" lang="it">IT</a>
           </li>
@@ -92,18 +132,27 @@ const enHref = lang === 'en' ? Astro.url.pathname : switchHref;
 
   <div id="mobile-menu" class="gara-header__mobile" hidden>
     <ul>
-      {items.map((item) => (
-        <li>
-          <a href={item.href}>{item.label}</a>
-          {item.children && (
-            <ul>
-              {item.children.map((child) => (
-                <li><a href={child.href}>{child.label}</a></li>
-              ))}
-            </ul>
-          )}
-        </li>
-      ))}
+      {items.map((item) => {
+        const active = navItemIsActive(item);
+        return (
+          <li>
+            <a
+              href={item.href}
+              class:list={{ 'is-active': active }}
+              aria-current={active ? 'page' : undefined}
+            >
+              {item.label}
+            </a>
+            {item.children && (
+              <ul>
+                {item.children.map((child) => (
+                  <li><a href={child.href}>{child.label}</a></li>
+                ))}
+              </ul>
+            )}
+          </li>
+        );
+      })}
       <li class="gara-header__mobile-langs">
         <a href={itHref} class:list={{ 'is-current': lang === 'it' }} hreflang="it">IT</a>
         <a href={enHref} class:list={{ 'is-current': lang === 'en' }} hreflang="en">EN</a>
@@ -114,10 +163,20 @@ const enHref = lang === 'en' ? Astro.url.pathname : switchHref;
 
 <style>
   .gara-header {
-    position: relative;
+    position: sticky;
+    top: 0;
     z-index: 10010; /* above hero (WP .fusion-header-wrapper) */
     background: #fff;
     color: #747474;
+    border-bottom: 1px solid transparent;
+    transition:
+      border-color var(--gara-duration-fast) var(--gara-ease),
+      box-shadow var(--gara-duration-fast) var(--gara-ease);
+  }
+
+  .gara-header.is-scrolled {
+    border-bottom-color: var(--gara-border);
+    box-shadow: 0 1px 12px rgba(0, 0, 0, 0.06);
   }
 
   .gara-header__bar {
@@ -166,6 +225,7 @@ const enHref = lang === 'en' ? Astro.url.pathname : switchHref;
   }
 
   .gara-header__link {
+    position: relative;
     display: flex;
     align-items: center;
     height: 84px;
@@ -189,6 +249,20 @@ const enHref = lang === 'en' ? Astro.url.pathname : switchHref;
     color: #333;
   }
 
+  .gara-header__link.is-active {
+    color: #333;
+  }
+
+  .gara-header__link.is-active::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 3px;
+    background: var(--gara-brand-hover);
+  }
+
   .gara-header__caret {
     display: inline-flex;
     margin-left: 6px;
@@ -210,9 +284,13 @@ const enHref = lang === 'en' ? Astro.url.pathname : switchHref;
     opacity: 0;
     visibility: hidden;
     z-index: 100;
+    transition:
+      opacity var(--gara-duration-fast) var(--gara-ease),
+      visibility var(--gara-duration-fast) var(--gara-ease);
   }
 
-  .gara-header__item:hover > .gara-header__sub {
+  .gara-header__item:hover > .gara-header__sub,
+  .gara-header__item:focus-within > .gara-header__sub {
     opacity: 1;
     visibility: visible;
   }
@@ -277,6 +355,11 @@ const enHref = lang === 'en' ? Astro.url.pathname : switchHref;
     border-bottom: 1px solid #dadada;
   }
 
+  .gara-header__mobile > ul > li > a.is-active {
+    color: var(--gara-brand-dark);
+    box-shadow: inset 3px 0 0 var(--gara-brand);
+  }
+
   .gara-header__mobile ul ul a {
     display: block;
     padding: 10px 20px 10px 32px;
@@ -295,6 +378,7 @@ const enHref = lang === 'en' ? Astro.url.pathname : switchHref;
   .gara-header__mobile-langs a {
     border: 0 !important;
     padding: 0 !important;
+    box-shadow: none !important;
   }
 
   .gara-header__mobile-langs a.is-current {
@@ -322,8 +406,17 @@ const enHref = lang === 'en' ? Astro.url.pathname : switchHref;
 </style>
 
 <script>
+  const header = document.getElementById('site-header');
   const btn = document.getElementById('mobile-menu-btn');
   const menu = document.getElementById('mobile-menu');
+
+  function updateScrollState() {
+    header?.classList.toggle('is-scrolled', window.scrollY > 8);
+  }
+
+  updateScrollState();
+  window.addEventListener('scroll', updateScrollState, { passive: true });
+
   btn?.addEventListener('click', () => {
     const open = menu?.hasAttribute('hidden');
     if (open) {

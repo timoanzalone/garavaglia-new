@@ -1,6 +1,7 @@
 ---
 /**
  * Area banner — measured from garavaglia.test @ 1920, 2026-07-21
+ * Light refresh: subtle hover scale + brightness on the background.
  *
  * Measured (5 home banners, all fusion-parallax-none):
  * - Full-bleed bg: cover, no-repeat; no dark overlay; no parallax
@@ -35,8 +36,9 @@ const {
 <a
   href={linkUrl}
   class="gara-banner"
-  style={`background-image: url('${backgroundImage}'); background-position: ${backgroundPosition}; padding: ${padding};`}
+  style={`--gara-banner-bg: url('${backgroundImage}'); --gara-banner-pos: ${backgroundPosition}; padding: ${padding};`}
 >
+  <span class="gara-banner__bg" aria-hidden="true"></span>
   <div class="gara-banner__row">
     <img
       class="gara-banner__logo"
@@ -44,25 +46,45 @@ const {
       alt={logoAlt}
       width={logoWidth}
       height={logoHeight}
-      loading="eager"
-      decoding="async"
+      loading="lazy"
     />
   </div>
 </a>
 
 <style>
   .gara-banner {
+    position: relative;
     display: block;
     width: 100%;
     margin: 0 0 40px;
     background-color: #fff;
-    background-size: cover;
-    background-repeat: no-repeat;
     text-decoration: none;
     box-sizing: border-box;
+    overflow: hidden;
+  }
+
+  .gara-banner__bg {
+    position: absolute;
+    inset: 0;
+    background-image: var(--gara-banner-bg);
+    background-position: var(--gara-banner-pos);
+    background-size: cover;
+    background-repeat: no-repeat;
+    transition:
+      transform var(--gara-duration) var(--gara-ease),
+      filter var(--gara-duration) var(--gara-ease);
+    z-index: 0;
+  }
+
+  .gara-banner:hover .gara-banner__bg,
+  .gara-banner:focus-visible .gara-banner__bg {
+    transform: scale(1.03);
+    filter: brightness(1.06);
   }
 
   .gara-banner__row {
+    position: relative;
+    z-index: 1;
     max-width: 1280px;
     margin: 0 auto;
   }
@@ -82,6 +104,18 @@ const {
 
     .gara-banner__logo {
       max-width: 260px;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .gara-banner__bg {
+      transition: none;
+    }
+
+    .gara-banner:hover .gara-banner__bg,
+    .gara-banner:focus-visible .gara-banner__bg {
+      transform: none;
+      filter: none;
     }
   }
 </style>

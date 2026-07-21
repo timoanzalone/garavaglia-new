@@ -9,7 +9,7 @@
  * Copyright (.fusion-footer-copyright-area):
  * - bg #fff; padding 32px 30px; h ≈ 86
  * - text Open Sans 12px / 20.4px / 400 / #5a5d62
- * - "Garavaglia | P.IVA IT03085820961 | 2022 |"
+ * - "Garavaglia | P.IVA IT03085820961 | {year} |"
  * - Privacy / Cookie: badge links 11px/700, pad 4px 8px, radius 3px,
  *   color rgba(0,0,0,0.65), bg #fff (iubenda-white style)
  */
@@ -21,6 +21,10 @@ interface Props {
 
 const { lang = 'it' } = Astro.props;
 const labels = t(lang);
+const footerNotice = labels.footerNotice.replace(
+  '{year}',
+  String(new Date().getFullYear()),
+);
 
 const social = [
   {
@@ -83,7 +87,7 @@ const cookieHref = 'https://www.iubenda.com/privacy-policy/91695126/cookie-polic
   <div class="gara-footer__copyright">
     <div class="gara-footer__row">
       <p class="gara-footer__notice">
-        {labels.footerNotice}
+        {footerNotice}
         <a class="gara-footer__badge" href={privacyHref} title={labels.privacyPolicy} target="_blank" rel="noopener noreferrer">
           {labels.privacyPolicy}
         </a>
