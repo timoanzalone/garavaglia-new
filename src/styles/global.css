@@ -1,0 +1,130 @@
+@import "tailwindcss";
+@import "./tokens.css";
+
+/* Map Garavaglia tokens → Tailwind utilities (text-brand, bg-footer, font-heading, …) */
+@theme {
+  --font-sans: var(--gara-font-body);
+  --font-heading: var(--gara-font-heading);
+  --font-nav: var(--gara-font-nav);
+
+  --color-brand: var(--gara-brand);
+  --color-brand-hover: var(--gara-brand-hover);
+  --color-brand-dark: var(--gara-brand-dark);
+
+  --color-text: var(--gara-text);
+  --color-text-strong: var(--gara-text-strong);
+  --color-text-black: var(--gara-text-black);
+  --color-text-muted: var(--gara-text-muted);
+
+  --color-page: var(--gara-page);
+  --color-header: var(--gara-header);
+  --color-footer: var(--gara-footer);
+  --color-copyright: var(--gara-copyright);
+  --color-border: var(--gara-border);
+  --color-dropdown: var(--gara-dropdown);
+
+  --color-amusement: var(--gara-amusement);
+  --color-exhibition: var(--gara-exhibition);
+  --color-visual: var(--gara-visual);
+  --color-deco: var(--gara-deco);
+  --color-edu: var(--gara-edu);
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: var(--gara-font-body);
+  font-size: var(--gara-text-body);
+  line-height: var(--gara-leading-body);
+  color: var(--gara-text);
+  background: var(--gara-page);
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: var(--gara-font-heading);
+  font-weight: 400;
+  color: var(--gara-text-strong);
+}
+
+.font-heading {
+  font-family: var(--gara-font-heading);
+}
+
+.font-nav {
+  font-family: var(--gara-font-nav);
+}
+
+.site-container {
+  width: 100%;
+  max-width: var(--gara-site-width);
+  margin-inline: auto;
+  padding-inline: var(--gara-content-pad);
+}
+
+@media (max-width: 800px) {
+  .site-container {
+    padding-inline: 20px;
+  }
+}
+
+::selection {
+  background-color: var(--gara-brand);
+  color: #fff;
+}
+
+/*
+ * Avada hover-type-zoomin — measured from garavaglia.test
+ * overflow hidden; img transition 1s; hover scale3d(1.1) + opacity 0.9
+ * Do NOT apply to: hero slides, home category banners, case-study covers
+ */
+.gara-zoomin {
+  display: block;
+  overflow: hidden;
+  line-height: 0;
+}
+
+.gara-zoomin img {
+  display: block;
+  width: 100%;
+  height: auto;
+  max-width: 100%;
+  transition-property: opacity, transform;
+  transition-duration: 1s;
+  transition-timing-function: ease;
+  transform: scale3d(1, 1, 1);
+  opacity: 1;
+  will-change: transform, opacity;
+}
+
+/* Fill-mode (galleries with fixed aspect boxes) */
+.gara-zoomin--cover {
+  height: 100%;
+}
+
+.gara-zoomin--cover img {
+  height: 100%;
+  object-fit: cover;
+}
+
+.gara-zoomin:hover img {
+  transform: scale3d(1.1, 1.1, 1);
+  opacity: 0.9;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .gara-zoomin img {
+    transition: none;
+  }
+
+  .gara-zoomin:hover img {
+    transform: none;
+    opacity: 1;
+  }
+}

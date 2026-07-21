@@ -1,0 +1,16 @@
+---
+/**
+ * Social page — measured from garavaglia.test/social/ (single content section)
+ */
+import Layout from '../layouts/Layout.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import SocialPage from '../components/SocialPage.astro';
+import { socialContent } from '../data/social';
+---
+
+<Layout title={socialContent.it.metaTitle} lang="it">
+  <Header lang="it" />
+  <SocialPage lang="it" />
+  <Footer lang="it" />
+</Layout>

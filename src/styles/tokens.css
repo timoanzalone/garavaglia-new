@@ -1,0 +1,67 @@
+/**
+ * Design tokens as CSS custom properties (--gara-*).
+ * Mapped into Tailwind in global.css @theme.
+ * Source: Avada fusion_options on garavaglia.test
+ */
+
+:root {
+  /* Brand */
+  --gara-brand: #96c222;
+  --gara-brand-hover: #a0ce4e;
+  --gara-brand-dark: #54770f;
+  /* Hero title pill — measured .home .fusion-title-sc-wrapper */
+  --gara-hero-title-bg: rgba(89, 119, 2, 0.7);
+
+  /* Text */
+  --gara-text: #747474;
+  --gara-text-strong: #333333;
+  --gara-text-black: #000000;
+  --gara-text-muted: #5a5d62;
+  --gara-text-inverse: #ffffff;
+
+  /* Surfaces */
+  --gara-page: #ffffff;
+  --gara-header: #ffffff;
+  --gara-footer: #96c222;
+  --gara-copyright: #ffffff;
+  --gara-dropdown: #f2efef;
+  --gara-dropdown-hover: #f8f8f8;
+  --gara-border: #e5e5e5;
+  --gara-dropdown-sep: #dcdadb;
+
+  /* Area accents */
+  --gara-amusement: #c51927;
+  --gara-exhibition: #2daae2;
+  --gara-visual: #fdc300;
+  --gara-deco: #951b80;
+  --gara-edu: #333333;
+
+  /* Typography */
+  --gara-font-body: "Open Sans", Arial, Helvetica, sans-serif;
+  --gara-font-heading: "Raleway", Arial, Helvetica, sans-serif;
+  --gara-font-nav: "Montserrat", Arial, Helvetica, sans-serif;
+
+  --gara-text-body: 15px;
+  --gara-leading-body: 1.7;
+  --gara-text-nav: 14px;
+  --gara-text-nav-dropdown: 13px;
+  --gara-text-hero: 60px;
+  --gara-leading-hero: 72px;
+  --gara-text-h1: 50px;
+  --gara-text-h2: 48px;
+  --gara-text-h3: 16px;
+  --gara-text-h4: 24px;
+  --gara-text-footer-heading: 18px;
+  --gara-text-copyright: 12px;
+
+  /* Layout */
+  --gara-site-width: 1280px;
+  --gara-content-pad: 40px;
+  --gara-header-height: 84px;
+  --gara-logo-width: 219px;
+  --gara-logo-height: 50px;
+  --gara-logo-margin-top: 15px;
+  --gara-dropdown-width: 180px;
+  --gara-dropdown-border-top: 3px;
+  --gara-portfolio-gap: 20px;
+}

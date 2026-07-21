@@ -1,0 +1,21 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import Header from '../../components/Header.astro';
+import Footer from '../../components/Footer.astro';
+import AreaPage from '../../components/AreaPage.astro';
+import { getArea } from '../../lib/content';
+import { t } from '../../i18n';
+
+const entry = await getArea('amusement', 'en');
+if (!entry) throw new Error('Missing amusement.en content');
+---
+
+<Layout
+  title={entry.data.metaTitle}
+  description={entry.data.metaDescription ?? t('en').metaDescription}
+  lang="en"
+>
+  <Header lang="en" />
+  <AreaPage entry={entry} />
+  <Footer lang="en" />
+</Layout>

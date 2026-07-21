@@ -1,0 +1,28 @@
+---
+interface Image {
+  src: string;
+  alt: string;
+}
+
+interface Props {
+  images: Image[];
+}
+
+const { images } = Astro.props;
+---
+
+<section class="py-12 lg:py-16 bg-gray-50">
+  <div class="max-w-[1400px] mx-auto px-6 lg:px-12">
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+      {images.map((image, index) => (
+        <div class="gara-zoomin gara-zoomin--cover aspect-[4/3] rounded-lg">
+          <img
+            src={image.src}
+            alt={image.alt}
+            loading={index < 2 ? 'eager' : 'lazy'}
+          />
+        </div>
+      ))}
+    </div>
+  </div>
+</section>

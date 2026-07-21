@@ -1,0 +1,256 @@
+---
+/**
+ * Contatti / Contact — measured from garavaglia.test/contatti/ @ 1920, 2026-07-21
+ *
+ * Hero (.fusion-slider-container, height 470):
+ * - sits below header (top 84), NOT underlaid like home
+ * - bg contact.jpg cover 50% 50%
+ * - title left in 1280 row: Raleway 48 / 57 / 400 / #fff; no green pill
+ * - vertically centered (top 50% + translateY(-50%)); pad 0 30px
+ *
+ * Info (.fusion-fullwidth nonhundred): pad 60px 30px; row max 1280
+ * - 1/3 col (~410) + 4% gutter + 2/3 (~819)
+ * - h2: Raleway 36 / 43.2 / 400 / #333; margin-bottom ≈ 40px
+ * - sep: 1px #e0dede full col width; margin-bottom 15px
+ * - body: Open Sans 15 / 25.5 / #747474; p margin-bottom 20
+ * - aerial img ~819×346 (1712×723 source)
+ *
+ * Map: hundred-percent; h 500; pad-bottom 60; zoom 12; roadmap;
+ *   Avada overlay_color_hsl sat0 lum100 → grayscale (CSS filter)
+ */
+import type { Lang } from '../data/site';
+import { contactContent } from '../data/contact';
+
+interface Props {
+  lang?: Lang;
+}
+
+const { lang = 'it' } = Astro.props;
+const c = contactContent[lang];
+
+const mapSrc = `https://maps.google.com/maps?q=${c.map.lat},${c.map.lng}&z=${c.map.zoom}&hl=${lang}&output=embed`;
+---
+
+<main class="gara-contact">
+  {/* Hero */}
+  <section
+    class="gara-contact__hero"
+    style={`background-image: url('${c.heroImage}');`}
+    aria-label={c.heroHeading}
+  >
+    <div class="gara-contact__hero-content">
+      <div class="gara-contact__hero-inner">
+        <h1 class="gara-contact__hero-title">{c.heroHeading}</h1>
+      </div>
+    </div>
+  </section>
+
+  {/* Address + aerial */}
+  <section class="gara-contact__info">
+    <div class="gara-contact__row">
+      <div class="gara-contact__col gara-contact__col--third">
+        <h2 class="gara-contact__park-title" set:html={c.parkTitleHtml} />
+        <div class="gara-contact__sep" aria-hidden="true" />
+        <p class="gara-contact__p" set:html={c.addressHtml} />
+      </div>
+      <div class="gara-contact__col gara-contact__col--two-thirds">
+        <figure class="gara-contact__figure">
+          <img
+            src={c.aerialImage}
+            alt="North Milan Business Park"
+            width="1712"
+            height="723"
+            loading="eager"
+            fetchpriority="high"
+          />
+        </figure>
+        <p class="gara-contact__p" set:html={c.bodyHtml} />
+      </div>
+    </div>
+  </section>
+
+  {/* Map */}
+  <section class="gara-contact__map-wrap" aria-label="Map">
+    <div class="gara-contact__map" style={`height: ${c.map.height}px;`}>
+      <iframe
+        title="North Milan Business Park"
+        src={mapSrc}
+        width="100%"
+        height={c.map.height}
+        loading="lazy"
+        referrerpolicy="no-referrer-when-downgrade"
+        allowfullscreen
+      />
+    </div>
+  </section>
+</main>
+
+<style>
+  .gara-contact {
+    background: #fff;
+  }
+
+  /* —— Hero —— */
+  .gara-contact__hero {
+    position: relative;
+    width: 100%;
+    height: 470px;
+    overflow: hidden;
+    background-color: #fff;
+    background-position: 50% 50%;
+    background-size: cover;
+    background-repeat: no-repeat;
+  }
+
+  .gara-contact__hero-content {
+    position: absolute;
+    top: 50%;
+    left: 0;
+    width: 100%;
+    padding: 0 30px;
+    transform: translateY(-50%);
+    z-index: 2;
+  }
+
+  .gara-contact__hero-inner {
+    max-width: 1280px;
+    margin: 0 auto;
+    text-align: left;
+  }
+
+  .gara-contact__hero-title {
+    display: inline-block;
+    margin: 0;
+    padding: 0;
+    font-family: var(--gara-font-heading);
+    font-size: 48px;
+    font-weight: 400;
+    line-height: 57px;
+    color: #fff;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* —— Info —— */
+  .gara-contact__info {
+    padding: 60px 30px;
+    box-sizing: border-box;
+  }
+
+  .gara-contact__row {
+    display: flex;
+    flex-wrap: wrap;
+    max-width: 1280px;
+    margin: 0 auto;
+    box-sizing: border-box;
+  }
+
+  .gara-contact__col {
+    box-sizing: border-box;
+    margin: 0 0 20px;
+  }
+
+  /* WP: 1/3 + 4% gutter → ~410 @ 1280; 2/3 → ~819 */
+  .gara-contact__col--third {
+    width: 31.96%;
+    max-width: 410px;
+    margin-right: 4%;
+  }
+
+  .gara-contact__col--two-thirds {
+    width: 64%;
+    max-width: 819px;
+  }
+
+  .gara-contact__park-title {
+    margin: 0 0 40px;
+    padding: 0;
+    font-family: var(--gara-font-heading);
+    font-size: 36px;
+    font-weight: 400;
+    line-height: 43.2px;
+    color: #333;
+  }
+
+  .gara-contact__sep {
+    width: 100%;
+    height: 0;
+    margin: 0 0 15px;
+    border: 0;
+    border-top: 1px solid #e0dede;
+  }
+
+  .gara-contact__p {
+    margin: 0 0 20px;
+    padding: 0;
+    font-family: var(--gara-font-body);
+    font-size: 15px;
+    font-weight: 400;
+    line-height: 25.5px;
+    color: #747474;
+  }
+
+  .gara-contact__p :global(a) {
+    color: #747474;
+    text-decoration: underline;
+  }
+
+  .gara-contact__p :global(a:hover) {
+    color: var(--gara-brand);
+  }
+
+  .gara-contact__figure {
+    margin: 0 0 20px;
+    padding: 0;
+  }
+
+  .gara-contact__figure img {
+    display: block;
+    width: 100%;
+    height: auto;
+  }
+
+  /* —— Map —— */
+  .gara-contact__map-wrap {
+    padding: 0 0 60px;
+    background: #fff;
+  }
+
+  .gara-contact__map {
+    position: relative;
+    width: 100%;
+    overflow: hidden;
+    background: #e5e3df;
+  }
+
+  .gara-contact__map iframe {
+    display: block;
+    width: 100%;
+    border: 0;
+    /* Avada custom map: overlay_color_hsl sat 0 / lum 100 */
+    filter: grayscale(1);
+  }
+
+  @media (max-width: 800px) {
+    .gara-contact__hero {
+      height: 320px;
+    }
+
+    .gara-contact__hero-title {
+      font-size: 32px;
+      line-height: 40px;
+    }
+
+    .gara-contact__col--third,
+    .gara-contact__col--two-thirds {
+      width: 100%;
+      max-width: none;
+      margin-right: 0;
+    }
+
+    .gara-contact__park-title {
+      font-size: 28px;
+      line-height: 34px;
+      margin-bottom: 24px;
+    }
+  }
+</style>

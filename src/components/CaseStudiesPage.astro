@@ -1,0 +1,190 @@
+---
+import type { CaseStudyEntry } from '../lib/content';
+import { portfolioBase, type Locale } from '../i18n';
+import { portfolioSection } from '../data/home';
+
+interface Props {
+  lang?: Locale;
+  studies: CaseStudyEntry[];
+}
+
+const { lang = 'it', studies } = Astro.props;
+const t = portfolioSection[lang];
+const base = portfolioBase(lang);
+const heading = lang === 'it' ? 'Case Study' : 'Case Studies';
+---
+
+<main class="gara-studies">
+  <section class="gara-studies__intro">
+    <div class="gara-studies__row">
+      <div class="gara-studies__col">
+        <h1 class="gara-studies__title">{heading}</h1>
+        <div class="gara-studies__sep" aria-hidden="true" />
+      </div>
+      <div class="gara-studies__col gara-studies__col--wide">
+        <p class="gara-studies__subtitle">{t.subtitle}</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="gara-studies__grid-wrap">
+    <div class="gara-studies__grid">
+      {
+        studies.map((study) => (
+          <a
+            href={`${base}/${study.data.slug}`}
+            class="gara-studies__item"
+            style={`--gara-cs-color: ${study.data.color};`}
+          >
+            <div
+              class="gara-studies__media"
+              style={`background-image: url('${study.data.image}');`}
+            >
+              <div class="gara-studies__rollover">
+                <h2 class="gara-studies__item-title">{study.data.title}</h2>
+                <p class="gara-studies__cat">{study.data.category}</p>
+              </div>
+            </div>
+          </a>
+        ))
+      }
+    </div>
+  </section>
+</main>
+
+<style>
+  .gara-studies {
+    background: #fff;
+  }
+
+  .gara-studies__intro {
+    padding: 0 30px;
+    margin: 60px 0 20px;
+  }
+
+  .gara-studies__row {
+    max-width: 1280px;
+    margin: 0 auto;
+    display: flex;
+    flex-wrap: wrap;
+  }
+
+  .gara-studies__col {
+    width: 30.6666%;
+    margin: 0 4% 0 0;
+  }
+
+  .gara-studies__col--wide {
+    width: 65.3334%;
+    margin-right: 0;
+  }
+
+  .gara-studies__title {
+    margin: 0 0 20px;
+    font-family: var(--gara-font-heading);
+    font-size: 48px;
+    font-weight: 400;
+    line-height: 57.6px;
+    color: #333;
+  }
+
+  .gara-studies__sep {
+    max-width: 170px;
+    height: 3px;
+    margin-bottom: 35px;
+    background: #e2e3e8;
+  }
+
+  .gara-studies__subtitle {
+    margin: 0;
+    font-family: var(--gara-font-body);
+    font-size: 15px;
+    line-height: 25.5px;
+    color: #747474;
+  }
+
+  .gara-studies__grid-wrap {
+    padding: 0 30px;
+  }
+
+  .gara-studies__grid {
+    max-width: 1280px;
+    margin: 45px auto 80px;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 30px;
+  }
+
+  .gara-studies__item {
+    display: block;
+    text-decoration: none;
+    overflow: hidden;
+  }
+
+  .gara-studies__media {
+    position: relative;
+    aspect-ratio: 407 / 334;
+    background-position: 50% 50%;
+    background-size: cover;
+    overflow: hidden;
+  }
+
+  .gara-studies__rollover {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 16px;
+    background-color: var(--gara-cs-color, #96c222);
+    opacity: 0;
+    transform: translateY(100%);
+    transition:
+      opacity 0.3s ease-in-out,
+      transform 0.3s ease-in-out;
+  }
+
+  .gara-studies__item:hover .gara-studies__rollover,
+  .gara-studies__item:focus-visible .gara-studies__rollover {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  .gara-studies__item-title {
+    margin: 0;
+    font-family: var(--gara-font-heading);
+    font-size: 24px;
+    font-weight: 400;
+    line-height: 36px;
+    color: #fff;
+    text-align: center;
+  }
+
+  .gara-studies__cat {
+    margin: 4px 0 0;
+    font-family: var(--gara-font-body);
+    font-size: 13px;
+    color: rgba(255, 255, 255, 0.9);
+    text-align: center;
+  }
+
+  @media (max-width: 900px) {
+    .gara-studies__col,
+    .gara-studies__col--wide {
+      width: 100%;
+      margin: 0 0 20px;
+    }
+
+    .gara-studies__grid {
+      grid-template-columns: repeat(2, 1fr);
+      gap: 20px;
+    }
+  }
+
+  @media (max-width: 600px) {
+    .gara-studies__grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

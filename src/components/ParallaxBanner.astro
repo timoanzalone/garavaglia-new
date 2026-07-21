@@ -1,0 +1,87 @@
+---
+/**
+ * Area banner — measured from garavaglia.test @ 1920, 2026-07-21
+ *
+ * Measured (5 home banners, all fusion-parallax-none):
+ * - Full-bleed bg: cover, no-repeat; no dark overlay; no parallax
+ * - Section pad L/R 30px; margin-bottom 40px
+ * - Per-banner pad T/B + background-position (see site.ts)
+ * - Logo in 1280px row, left-aligned, natural px size
+ * - Height = pad-top + logo-height + pad-bottom
+ */
+interface Props {
+  backgroundImage: string;
+  backgroundPosition?: string;
+  padding?: string;
+  logo: string;
+  logoAlt: string;
+  logoWidth: number;
+  logoHeight: number;
+  linkUrl: string;
+}
+
+const {
+  backgroundImage,
+  backgroundPosition = 'center center',
+  padding = '175px 30px',
+  logo,
+  logoAlt,
+  logoWidth,
+  logoHeight,
+  linkUrl,
+} = Astro.props;
+---
+
+<a
+  href={linkUrl}
+  class="gara-banner"
+  style={`background-image: url('${backgroundImage}'); background-position: ${backgroundPosition}; padding: ${padding};`}
+>
+  <div class="gara-banner__row">
+    <img
+      class="gara-banner__logo"
+      src={logo}
+      alt={logoAlt}
+      width={logoWidth}
+      height={logoHeight}
+      loading="eager"
+      decoding="async"
+    />
+  </div>
+</a>
+
+<style>
+  .gara-banner {
+    display: block;
+    width: 100%;
+    margin: 0 0 40px;
+    background-color: #fff;
+    background-size: cover;
+    background-repeat: no-repeat;
+    text-decoration: none;
+    box-sizing: border-box;
+  }
+
+  .gara-banner__row {
+    max-width: 1280px;
+    margin: 0 auto;
+  }
+
+  .gara-banner__logo {
+    display: block;
+    width: auto;
+    max-width: 100%;
+    height: auto;
+  }
+
+  @media (max-width: 800px) {
+    .gara-banner {
+      padding-top: 80px !important;
+      padding-bottom: 80px !important;
+    }
+
+    .gara-banner__logo {
+      max-width: 260px;
+    }
+  }
+</style>

@@ -1,0 +1,111 @@
+---
+/**
+ * Area page hero — measured from garavaglia.test/amusement/ @ 1920, 2026-07-21
+ *
+ * Section (.fusion-fullwidth.bg-parallax-parent):
+ * - h ≈ 556; padding 180px 30px; overflow hidden
+ * - bg via .parallax-inner: Image cover, position center bottom
+ *   (WP uses fusion-parallax-up; resting frame matched statically here)
+ * - row max-width 1280
+ * - logo in 1/2 col (~614): Amusement@2x.png displayed 412×176
+ */
+interface Props {
+  backgroundImage: string;
+  backgroundPosition?: string;
+  padding?: string;
+  logo: string;
+  logoAlt: string;
+  logoWidth: number;
+  logoHeight: number;
+}
+
+const {
+  backgroundImage,
+  backgroundPosition = 'center bottom',
+  padding = '180px 30px',
+  logo,
+  logoAlt,
+  logoWidth,
+  logoHeight,
+} = Astro.props;
+---
+
+<section
+  class="gara-area-hero"
+  style={`padding: ${padding};`}
+>
+  <div
+    class="gara-area-hero__bg"
+    style={`background-image: url('${backgroundImage}'); background-position: ${backgroundPosition};`}
+    aria-hidden="true"
+  />
+  <div class="gara-area-hero__row">
+    <div class="gara-area-hero__col">
+      <img
+        class="gara-area-hero__logo"
+        src={logo}
+        alt={logoAlt}
+        width={logoWidth}
+        height={logoHeight}
+      />
+    </div>
+  </div>
+</section>
+
+<style>
+  .gara-area-hero {
+    position: relative;
+    width: 100%;
+    margin: 0;
+    overflow: hidden;
+    background: #fff;
+    box-sizing: border-box;
+  }
+
+  .gara-area-hero__bg {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    background-color: #fff;
+    background-size: cover;
+    background-repeat: no-repeat;
+    pointer-events: none;
+  }
+
+  .gara-area-hero__row {
+    position: relative;
+    z-index: 1;
+    max-width: 1280px;
+    margin: 0 auto;
+  }
+
+  /* WP: fusion-one-half + 4% gutter → ~614 @ 1280 */
+  .gara-area-hero__col {
+    width: 47.999%;
+    max-width: 614px;
+    margin: 0 0 20px;
+  }
+
+  .gara-area-hero__logo {
+    display: block;
+    width: auto;
+    max-width: 100%;
+    height: auto;
+  }
+
+  @media (max-width: 800px) {
+    .gara-area-hero {
+      padding-top: 100px !important;
+      padding-bottom: 100px !important;
+    }
+
+    .gara-area-hero__col {
+      width: 100%;
+      max-width: none;
+    }
+
+    .gara-area-hero__logo {
+      max-width: 280px;
+    }
+  }
+</style>

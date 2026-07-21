@@ -1,0 +1,191 @@
+---
+/**
+ * Case Study section — measured from garavaglia.test @ 1920, 2026-07-21
+ *
+ * Header block:
+ * - row max-width 1280; pad 0 30 on section
+ * - cols 1/3 + 2/3 with 4% gutter (≈410 + 51 + 819)
+ * - h3: Raleway 30px / 45px / 400 / #333; margin-bottom 30px
+ * - subtitle: Open Sans 15 / 25.5 / #747474; padding-left 25px
+ *
+ * Grid (fusion-portfolio-three masonry, margin-top 45px, margin-bottom 80px):
+ * - 3 cols; item content 407×334; effective gap 30px
+ * - bg cover center; no text until hover
+ * - rollover: slide up (translateY); category color; title Raleway 24/36/400 white
+ *
+ * Area pages: after a quote bar, the projects block also needs margin-top 80px
+ * before this header (see AreaPage) — do not rely on home spacing alone.
+ */
+import { portfolioSection } from '../data/home';
+import { getFeaturedCaseStudies } from '../lib/content';
+import { portfolioBase, type Locale } from '../i18n';
+
+interface Props {
+  lang?: Locale;
+}
+
+const { lang = 'it' } = Astro.props;
+const featured = await getFeaturedCaseStudies(lang);
+const t = portfolioSection[lang];
+const base = portfolioBase(lang);
+---
+
+<section id="portfolio" class="gara-cs">
+  <div class="gara-cs__header">
+    <div class="gara-cs__title-col">
+      <h3 class="gara-cs__title">{t.title}</h3>
+    </div>
+    <div class="gara-cs__sub-col">
+      <p class="gara-cs__subtitle">{t.subtitle}</p>
+    </div>
+  </div>
+
+  <div class="gara-cs__grid">
+    {
+      featured.map((project) => (
+        <a
+          href={`${base}/${project.data.slug}`}
+          class="gara-cs__item"
+          style={`--gara-cs-color: ${project.data.color};`}
+        >
+          <div
+            class="gara-cs__media"
+            style={`background-image: url('${project.data.image}');`}
+          >
+            <div class="gara-cs__rollover">
+              <h4 class="gara-cs__item-title">{project.data.title}</h4>
+            </div>
+          </div>
+        </a>
+      ))
+    }
+  </div>
+</section>
+
+<style>
+  .gara-cs {
+    background: #fff;
+    padding: 0 30px;
+  }
+
+  .gara-cs__header {
+    max-width: 1280px;
+    margin: 0 auto;
+    display: flex;
+    flex-wrap: wrap;
+  }
+
+  .gara-cs__title-col {
+    width: calc(33.33% - (4% * 0.3333));
+    margin: 0 4% 20px 0;
+  }
+
+  .gara-cs__sub-col {
+    width: calc(66.66% - (4% * 0.6666));
+    margin: 0 0 20px;
+  }
+
+  .gara-cs__title {
+    margin: 0 0 30px;
+    padding: 0;
+    font-family: var(--gara-font-heading);
+    font-size: 30px;
+    font-weight: 400;
+    line-height: 45px;
+    color: #333;
+  }
+
+  .gara-cs__subtitle {
+    margin: 0 0 20px;
+    padding: 0 0 0 25px;
+    font-family: var(--gara-font-body);
+    font-size: 15px;
+    font-weight: 400;
+    line-height: 25.5px;
+    color: #747474;
+  }
+
+  .gara-cs__grid {
+    max-width: 1280px;
+    margin: 45px auto 80px;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 30px;
+  }
+
+  .gara-cs__item {
+    display: block;
+    text-decoration: none;
+    overflow: hidden;
+  }
+
+  .gara-cs__media {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 407 / 334;
+    background-position: 50% 50%;
+    background-size: cover;
+    background-repeat: no-repeat;
+    overflow: hidden;
+  }
+
+  .gara-cs__rollover {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 10px;
+    background-color: var(--gara-cs-color, #96c222);
+    opacity: 0;
+    transform: translateY(100%);
+    transition:
+      opacity 0.3s ease-in-out,
+      transform 0.3s ease-in-out;
+  }
+
+  .gara-cs__item:hover .gara-cs__rollover,
+  .gara-cs__item:focus-visible .gara-cs__rollover {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  .gara-cs__item-title {
+    margin: 10px 0 3px;
+    padding: 0;
+    font-family: var(--gara-font-heading);
+    font-size: 24px;
+    font-weight: 400;
+    line-height: 36px;
+    color: #fff;
+    text-align: center;
+  }
+
+  @media (max-width: 900px) {
+    .gara-cs__title-col,
+    .gara-cs__sub-col {
+      width: 100%;
+      margin-right: 0;
+    }
+
+    .gara-cs__subtitle {
+      padding-left: 0;
+    }
+
+    .gara-cs__grid {
+      grid-template-columns: repeat(2, 1fr);
+      gap: 20px;
+    }
+  }
+
+  @media (max-width: 600px) {
+    .gara-cs__grid {
+      grid-template-columns: 1fr;
+    }
+
+    .gara-cs__title {
+      font-size: 26px;
+      line-height: 36px;
+    }
+  }
+</style>

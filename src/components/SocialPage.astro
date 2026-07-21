@@ -1,0 +1,182 @@
+---
+/**
+ * Social / Video — measured from garavaglia.test/social/ @ 1920, 2026-07-21
+ *
+ * #main: padding 90px 30px 45px; white
+ * Row max-width 1280
+ * Outer col 2/3 (~819 @ 1280, 4% gutter); margin-bottom 20
+ *   Title row: 1/3 (~251) — h1 Video Raleway 30/42 #333; sep 1px #e0dede full col
+ *   Video row: two 1/2 (~393) + 4% gutter (~33); iframe aspect padding-top 60%
+ *     IT: 237094197 | 64719782
+ *     EN: 64719782 | 237094197
+ *   Body: Open Sans 15/25.5 #747474; links #333; p margin-bottom 20
+ */
+import type { Locale } from '../i18n';
+import { socialContent } from '../data/social';
+
+interface Props {
+  lang?: Locale;
+}
+
+const { lang = 'it' } = Astro.props;
+const c = socialContent[lang];
+---
+
+<main class="gara-social">
+  <div class="gara-social__row">
+    <div class="gara-social__outer">
+      <div class="gara-social__title-block">
+        <h1 class="gara-social__title">{c.heading}</h1>
+        <div class="gara-social__sep" aria-hidden="true" />
+      </div>
+
+      <div class="gara-social__videos">
+        {
+          c.videos.map((id) => (
+            <div class="gara-social__video">
+              <div class="gara-social__video-inner">
+                <iframe
+                  src={`https://player.vimeo.com/video/${id}?autoplay=0&autopause=0`}
+                  title={`vimeo${id}`}
+                  allow="autoplay; fullscreen"
+                  allowfullscreen
+                  loading="lazy"
+                />
+              </div>
+            </div>
+          ))
+        }
+      </div>
+
+      <div class="gara-social__body">
+        <p class="gara-social__p">
+          <a href={c.vimeoUrl} target="_blank" rel="noopener noreferrer">{c.vimeoUrl}</a>
+        </p>
+        <p class="gara-social__p" set:html={c.bodyHtml} />
+      </div>
+    </div>
+  </div>
+</main>
+
+<style>
+  .gara-social {
+    box-sizing: border-box;
+    width: 100%;
+    padding: 90px 30px 45px;
+    margin: 0;
+    background: #fff;
+    color: #747474;
+    font-family: var(--gara-font-body);
+    font-size: 15px;
+    line-height: 25.5px;
+  }
+
+  .gara-social__row {
+    max-width: 1280px;
+    margin: 0 auto;
+  }
+
+  /* WP fusion-two-third @ 1280 → ~819 */
+  .gara-social__outer {
+    width: calc(66.66% - (4% * 0.6666));
+    max-width: 819px;
+    margin: 0 0 20px;
+  }
+
+  /* WP inner 1/3 under the 2/3 (~251) */
+  .gara-social__title-block {
+    width: calc(33.33% - ((4% + 4%) * 0.3333));
+    max-width: 251px;
+    margin: 0 0 20px;
+  }
+
+  .gara-social__title {
+    margin: 0 0 20px;
+    font-family: var(--gara-font-heading);
+    font-size: 30px;
+    font-weight: 400;
+    line-height: 42px;
+    color: #333;
+  }
+
+  .gara-social__sep {
+    width: 100%;
+    height: 0;
+    border: 0;
+    border-top: 1px solid #e0dede;
+  }
+
+  .gara-social__videos {
+    display: flex;
+    flex-wrap: wrap;
+    margin: 0 0 20px;
+  }
+
+  /* WP fusion-one-half + 4% gutter → ~393 @ 819 parent */
+  .gara-social__video {
+    width: calc(48%);
+    margin: 0 0 20px;
+  }
+
+  .gara-social__video:first-child {
+    margin-right: 4%;
+  }
+
+  .gara-social__video-inner {
+    position: relative;
+    width: 100%;
+    height: 0;
+    padding-top: 60%;
+    overflow: hidden;
+  }
+
+  .gara-social__video-inner iframe {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    border: 0;
+  }
+
+  .gara-social__body {
+    margin: 0;
+  }
+
+  .gara-social__p {
+    margin: 0 0 20px;
+    font-family: var(--gara-font-body);
+    font-size: 15px;
+    font-weight: 400;
+    line-height: 25.5px;
+    color: #747474;
+  }
+
+  .gara-social__p :global(a),
+  .gara-social__p a {
+    color: #333;
+    text-decoration: none;
+  }
+
+  .gara-social__p :global(a):hover,
+  .gara-social__p a:hover {
+    color: #96c222;
+  }
+
+  @media (max-width: 800px) {
+    .gara-social {
+      padding: 60px 20px 40px;
+    }
+
+    .gara-social__outer,
+    .gara-social__title-block,
+    .gara-social__video {
+      width: 100%;
+      max-width: none;
+      margin-right: 0;
+    }
+
+    .gara-social__video:first-child {
+      margin-right: 0;
+    }
+  }
+</style>

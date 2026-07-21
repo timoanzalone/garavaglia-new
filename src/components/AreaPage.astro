@@ -1,0 +1,461 @@
+---
+/**
+ * Area page — measured from garavaglia.test area URLs @ 1920, 2026-07-21
+ *
+ * Stack:
+ * 1. Hero (parallax-up resting frame): pad 180×30, logo in 1/2 col
+ * 2. Intro: pad 60×30×90 (edu bottom 40); Amusement = two 1/2 cols;
+ *    others = stacked 1/1. Titles ~36/38; separator 12px × 270 max, area color
+ * 3. Quote bar: pad 95×30×75; area color; white quote text
+ * 4. Projects (optional): Portfolio header 1/3+2/3 + 3-col grid filtered by category
+ * 5. Events (Edutainment): h3 + 4-col image grid
+ */
+import AreaHero from './AreaHero.astro';
+import { getCaseStudiesByCategory, type AreaEntry } from '../lib/content';
+import { portfolioBase } from '../i18n';
+
+interface Props {
+  entry: AreaEntry;
+}
+
+const { entry } = Astro.props;
+const {
+  color,
+  hero,
+  sections,
+  introLayout = 'stack',
+  quoteBar,
+  projects,
+  events,
+  lang,
+} = entry.data;
+
+const quoteBg = quoteBar?.backgroundColor ?? color;
+const caseStudies = projects
+  ? await getCaseStudiesByCategory(projects.category, lang)
+  : [];
+const base = portfolioBase(lang);
+---
+
+<main class="gara-area" style={`--gara-area-color: ${color};`}>
+  <AreaHero
+    backgroundImage={hero.backgroundImage}
+    backgroundPosition={hero.backgroundPosition}
+    padding={hero.padding}
+    logo={hero.logo}
+    logoAlt={hero.logoAlt}
+    logoWidth={hero.logoWidth}
+    logoHeight={hero.logoHeight}
+  />
+
+  <section
+    class:list={[
+      'gara-area__intro',
+      introLayout === 'two-col' && 'gara-area__intro--two',
+    ]}
+  >
+    <div class="gara-area__intro-row">
+      {
+        sections.map((section) => (
+          <div class="gara-area__intro-col">
+            {section.titleTag === 'h1' ? (
+              section.titleHtml ? (
+                <h1 class="gara-area__title" set:html={section.titleHtml} />
+              ) : (
+                <h1 class="gara-area__title">{section.title}</h1>
+              )
+            ) : section.titleTag === 'h3' ? (
+              section.titleHtml ? (
+                <h3 class="gara-area__title" set:html={section.titleHtml} />
+              ) : (
+                <h3 class="gara-area__title">{section.title}</h3>
+              )
+            ) : section.titleHtml ? (
+              <h2 class="gara-area__title" set:html={section.titleHtml} />
+            ) : (
+              <h2 class="gara-area__title">{section.title}</h2>
+            )}
+            <div class="gara-area__sep" aria-hidden="true" />
+            <div class="gara-area__body" set:html={section.bodyHtml} />
+          </div>
+        ))
+      }
+    </div>
+  </section>
+
+  {
+    quoteBar && (
+      <section
+        class="gara-area__quote-bar"
+        style={`background-color: ${quoteBg};`}
+      >
+        <blockquote class="gara-area__quote">
+          <p>
+            “{quoteBar.text}”
+            {quoteBar.author && (
+              <>
+                {' '}
+                <span class="gara-area__quote-author">– {quoteBar.author}</span>
+              </>
+            )}
+          </p>
+        </blockquote>
+      </section>
+    )
+  }
+
+  {
+    projects && (
+      <section class="gara-area__projects">
+        <div class="gara-area__projects-header">
+          <div class="gara-area__projects-title-col">
+            <h3 class="gara-area__projects-title">{projects.title}</h3>
+          </div>
+          <div class="gara-area__projects-sub-col">
+            <p class="gara-area__projects-subtitle">{projects.subtitle}</p>
+          </div>
+        </div>
+
+        {caseStudies.length > 0 && (
+          <div class="gara-area__grid">
+            {caseStudies.map((project) => (
+              <a
+                href={`${base}/${project.data.slug}`}
+                class="gara-area__item"
+                style={`--gara-cs-color: ${project.data.color};`}
+              >
+                <div
+                  class="gara-area__media"
+                  style={`background-image: url('${project.data.image}');`}
+                >
+                  <div class="gara-area__rollover">
+                    <h4 class="gara-area__item-title">{project.data.title}</h4>
+                  </div>
+                </div>
+              </a>
+            ))}
+          </div>
+        )}
+      </section>
+    )
+  }
+
+  {
+    events && (
+      <section class="gara-area__events">
+        <h3 class="gara-area__events-title">{events.title}</h3>
+        <div class="gara-area__events-grid">
+          {events.images.map((img) => (
+            <div class="gara-area__event">
+              <img
+                class="gara-area__event-img gara-zoomin"
+                src={img.src}
+                alt={img.alt}
+                loading="lazy"
+              />
+            </div>
+          ))}
+        </div>
+      </section>
+    )
+  }
+</main>
+
+<style>
+  .gara-area {
+    background: #fff;
+  }
+
+  /* Intro — WP FW1: pad 60 30 90 (edu uses 40 bottom via content override if needed) */
+  .gara-area__intro {
+    padding: 60px 30px 90px;
+    background: #fff;
+  }
+
+  .gara-area__intro-row {
+    max-width: 1280px;
+    margin: 0 auto;
+    display: flex;
+    flex-wrap: wrap;
+  }
+
+  .gara-area__intro--two .gara-area__intro-col {
+    width: calc(50% - (4% * 0.5));
+    margin: 0 4% 20px 0;
+    box-sizing: border-box;
+  }
+
+  .gara-area__intro--two .gara-area__intro-col:last-child {
+    margin-right: 0;
+  }
+
+  .gara-area__intro:not(.gara-area__intro--two) .gara-area__intro-col {
+    width: 100%;
+    margin: 0 0 20px;
+  }
+
+  /* WP: h1 36/38; strong on first line where titleHtml provides it */
+  .gara-area__title {
+    margin: 0;
+    padding: 0;
+    font-family: var(--gara-font-heading);
+    font-size: 36px;
+    font-weight: 400;
+    line-height: 38px;
+    color: #333;
+  }
+
+  .gara-area__title :global(strong) {
+    font-weight: 700;
+  }
+
+  /* WP fusion-separator: 12px top border, max 270, margins 20/32 */
+  .gara-area__sep {
+    width: 100%;
+    max-width: 270px;
+    height: 0;
+    margin: 20px 0 32px;
+    border: 0;
+    border-top: 12px solid var(--gara-area-color, #c61a27);
+  }
+
+  .gara-area__body {
+    font-family: var(--gara-font-body);
+    font-size: 15px;
+    font-weight: 400;
+    line-height: 25.5px;
+    color: #747474;
+  }
+
+  .gara-area__body :global(b),
+  .gara-area__body :global(strong) {
+    font-weight: 700;
+  }
+
+  .gara-area__body :global(p) {
+    margin: 0 0 1em;
+  }
+
+  .gara-area__body :global(p:last-child) {
+    margin-bottom: 0;
+  }
+
+  /* Quote bar — WP amusement FW2 @ 1920: pad 95 30 75, white text on area color */
+  .gara-area__quote-bar {
+    padding: 95px 30px 75px;
+    box-sizing: border-box;
+  }
+
+  .gara-area__quote {
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: 0;
+    border: 0;
+    text-align: center;
+  }
+
+  .gara-area__quote p {
+    margin: 0;
+    font-family: var(--gara-font-body);
+    font-size: 18px;
+    font-weight: 400;
+    line-height: 28.8px;
+    color: #fff;
+  }
+
+  .gara-area__quote-author {
+    white-space: nowrap;
+  }
+
+  /*
+   * Projects — measured garavaglia.test/amusement/ @ 1920, 2026-07-21
+   * - projects header FW: margin-top 80px (gap after quote bar), pad 0 30
+   * - title h3: 30/45/#333, margin-bottom 30; col 1/3 mb 20
+   * - subtitle: 15/25.5/#747474, pad-left 25, margin-bottom 20; col 2/3
+   * - title & subtitle tops aligned
+   * - portfolio FW: margin-top 45px → title-bottom to grid media ≈ 95px
+   * - portfolio wrap: margin-bottom 80px
+   */
+  .gara-area__projects {
+    background: #fff;
+    margin-top: 80px;
+    padding: 0 30px;
+  }
+
+  .gara-area__projects-header {
+    max-width: 1280px;
+    margin: 0 auto;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-start;
+  }
+
+  .gara-area__projects-title-col {
+    width: calc(33.33% - (4% * 0.3333));
+    margin: 0 4% 20px 0;
+  }
+
+  .gara-area__projects-sub-col {
+    width: calc(66.66% - (4% * 0.6666));
+    margin: 0 0 20px;
+  }
+
+  .gara-area__projects-title {
+    margin: 0 0 30px;
+    padding: 0;
+    font-family: var(--gara-font-heading);
+    font-size: 30px;
+    font-weight: 400;
+    line-height: 45px;
+    color: #333;
+  }
+
+  .gara-area__projects-subtitle {
+    margin: 0 0 20px;
+    padding: 0 0 0 25px;
+    font-family: var(--gara-font-body);
+    font-size: 15px;
+    font-weight: 400;
+    line-height: 25.5px;
+    color: #747474;
+  }
+
+  /* WP portfolio fullwidth margin-top 45px (not stacked on top of extra header gap) */
+  .gara-area__grid {
+    max-width: 1280px;
+    margin: 45px auto 80px;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 30px;
+  }
+
+  .gara-area__item {
+    display: block;
+    text-decoration: none;
+    overflow: hidden;
+  }
+
+  .gara-area__media {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 407 / 334;
+    background-position: 50% 50%;
+    background-size: cover;
+    background-repeat: no-repeat;
+    overflow: hidden;
+  }
+
+  .gara-area__rollover {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 10px;
+    background-color: var(--gara-cs-color, #96c222);
+    opacity: 0;
+    transform: translateY(100%);
+    transition:
+      opacity 0.3s ease-in-out,
+      transform 0.3s ease-in-out;
+  }
+
+  .gara-area__item:hover .gara-area__rollover,
+  .gara-area__item:focus-visible .gara-area__rollover {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  .gara-area__item-title {
+    margin: 10px 0 3px;
+    padding: 0;
+    font-family: var(--gara-font-heading);
+    font-size: 24px;
+    font-weight: 400;
+    line-height: 36px;
+    color: #fff;
+    text-align: center;
+  }
+
+  /* Edutainment events — 4-col, 16px gutters */
+  .gara-area__events {
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: 0 30px 80px;
+  }
+
+  .gara-area__events-title {
+    margin: 0 0 30px;
+    padding: 0;
+    font-family: var(--gara-font-heading);
+    font-size: 30px;
+    font-weight: 400;
+    line-height: 45px;
+    color: #333;
+    text-align: center;
+  }
+
+  .gara-area__events-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+  }
+
+  .gara-area__event {
+    overflow: hidden;
+  }
+
+  .gara-area__event-img {
+    display: block;
+    width: 100%;
+    height: auto;
+  }
+
+  @media (max-width: 900px) {
+    .gara-area__intro--two .gara-area__intro-col {
+      width: 100%;
+      margin-right: 0;
+    }
+
+    .gara-area__projects-title-col,
+    .gara-area__projects-sub-col {
+      width: 100%;
+      margin-right: 0;
+    }
+
+    .gara-area__projects-subtitle {
+      padding-left: 0;
+    }
+
+    .gara-area__grid {
+      grid-template-columns: repeat(2, 1fr);
+      gap: 20px;
+    }
+
+    .gara-area__events-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  @media (max-width: 600px) {
+    .gara-area__grid,
+    .gara-area__events-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .gara-area__title {
+      font-size: 28px;
+      line-height: 32px;
+    }
+
+    .gara-area__projects-title,
+    .gara-area__events-title {
+      font-size: 26px;
+      line-height: 36px;
+    }
+
+    .gara-area__quote-bar {
+      padding: 60px 20px 50px;
+    }
+  }
+</style>

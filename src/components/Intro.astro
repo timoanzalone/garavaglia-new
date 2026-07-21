@@ -1,0 +1,138 @@
+---
+/**
+ * Intro (below hero) — measured from garavaglia.test @ 1920, 2026-07-21
+ *
+ * Measured:
+ * - .fusion-fullwidth: bg #fff; padding 0 30px; margin-top/bottom 60px
+ * - .fusion-row: max-width 1280px; centered
+ * - 3 × 1/3 columns: width 30.6666%, margin-right 4% (last 0); ~393px @ 1280
+ * - h2: Raleway 48px / 57.6px / 400 / #333; margin-bottom 52.8px;
+ *   "Garavaglia.<br>L'arte di creare emozioni."
+ * - icons: max-width 290px (376×77 source → ~290×59 displayed)
+ * - body p: Open Sans 15px / 25.5px / 400 / #747474; margin-bottom 20px
+ * - areas: colored <b> labels (not pills) + <strong> descriptions inline
+ */
+import { introContent } from '../data/home';
+import type { Locale } from '../i18n';
+
+interface Props {
+  lang?: Locale;
+}
+
+const { lang = 'it' } = Astro.props;
+const t = introContent[lang];
+---
+
+<section id="intro" class="gara-intro">
+  <div class="gara-intro__row">
+    <div class="gara-intro__col">
+      <h2 class="gara-intro__title" set:html={t.titleHtml} />
+      <span class="gara-intro__icons">
+        <img
+          src="/brand/service-icons.png"
+          width="376"
+          height="77"
+          alt=""
+          loading="lazy"
+        />
+      </span>
+    </div>
+
+    <div class="gara-intro__col">
+      {t.paragraphs.map((p) => <p class="gara-intro__p" set:html={p.html} />)}
+    </div>
+
+    <div class="gara-intro__col gara-intro__col--last">
+      <p class="gara-intro__p">{t.areasTitle}</p>
+      {
+        t.areas.map((area) => (
+          <p class="gara-intro__p">
+            <b style={`color: ${area.color};`}>{area.label}</b>{' '}
+            <strong>{area.description}</strong>
+          </p>
+        ))
+      }
+    </div>
+  </div>
+</section>
+
+<style>
+  .gara-intro {
+    background: #fff;
+    padding: 0 30px;
+    margin: 60px 0;
+  }
+
+  .gara-intro__row {
+    max-width: 1280px;
+    margin: 0 auto;
+    display: flex;
+    flex-wrap: wrap;
+  }
+
+  .gara-intro__col {
+    width: 30.6666%;
+    margin: 0 4% 0 0;
+    box-sizing: border-box;
+  }
+
+  .gara-intro__col--last {
+    margin-right: 0;
+  }
+
+  .gara-intro__title {
+    margin: 0 0 52.8px;
+    padding: 0;
+    font-family: var(--gara-font-heading);
+    font-size: 48px;
+    font-weight: 400;
+    line-height: 57.6px;
+    color: #333;
+  }
+
+  .gara-intro__icons {
+    display: inline-block;
+    width: 100%;
+    max-width: 290px;
+    line-height: 0;
+  }
+
+  .gara-intro__icons img {
+    display: block;
+    width: 100%;
+    height: auto;
+    max-width: 100%;
+  }
+
+  .gara-intro__p {
+    margin: 0 0 20px;
+    padding: 0;
+    font-family: var(--gara-font-body);
+    font-size: 15px;
+    font-weight: 400;
+    line-height: 25.5px;
+    color: #747474;
+  }
+
+  .gara-intro__p b,
+  .gara-intro__p strong {
+    font-weight: 700;
+  }
+
+  @media (max-width: 800px) {
+    .gara-intro__col {
+      width: 100%;
+      margin: 0 0 40px;
+    }
+
+    .gara-intro__col--last {
+      margin-bottom: 0;
+    }
+
+    .gara-intro__title {
+      font-size: 32px;
+      line-height: 40px;
+      margin-bottom: 32px;
+    }
+  }
+</style>

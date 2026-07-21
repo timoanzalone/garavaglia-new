@@ -1,0 +1,337 @@
+---
+/**
+ * Header — measured from garavaglia.test (1920 viewport), 2026-07-21
+ *
+ * Measured:
+ * - .fusion-header: h=84px, bg=#fff, padding=0 30px, no border, no shadow
+ * - .fusion-row: max-width=1280px, h=84px
+ * - logo: 219×50, margin-top=15px, retina LOGO-GARAVAGLIA2x.png
+ * - logo float left; menu float right
+ * - menu links: Montserrat 14px / 400 / #000, no letter-spacing, no text-transform
+ * - li padding-right: 30px; link height 84px; flex align center
+ * - caret: FA chevron (~9×17), color #000
+ * - active lang (current): #333; others #000
+ * - header in document flow (not fixed at rest)
+ */
+import { navByLang } from '../data/site';
+import { homePath, switchLocalePath, t, type Locale } from '../i18n';
+
+interface Props {
+  lang?: Locale;
+}
+
+const { lang = 'it' } = Astro.props;
+const items = navByLang[lang];
+const labels = t(lang);
+const switchHref = switchLocalePath(lang, Astro.url.pathname + Astro.url.hash);
+const itHref = lang === 'it' ? Astro.url.pathname : switchHref;
+const enHref = lang === 'en' ? Astro.url.pathname : switchHref;
+---
+
+<header class="gara-header">
+  <div class="gara-header__bar">
+    <div class="gara-header__row">
+      <div class="gara-header__logo">
+        <a href={homePath(lang)}>
+          <img
+            src="/brand/logo.png"
+            srcset="/brand/logo.png 1x, /brand/logo@2x.png 2x"
+            width="219"
+            height="50"
+            alt="Garavaglia"
+          />
+        </a>
+      </div>
+
+      <nav class="gara-header__nav" aria-label={labels.mainMenu}>
+        <ul class="gara-header__menu">
+          {items.map((item) => (
+            <li class:list={['gara-header__item', { 'has-children': !!item.children }]}>
+              <a href={item.href} class="gara-header__link">
+                <span class="menu-text">{item.label}</span>
+                {item.children && (
+                  <span class="gara-header__caret" aria-hidden="true">
+                    <svg width="9" height="6" viewBox="0 0 9 6" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <path d="M1 1.25L4.5 4.75L8 1.25" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                  </span>
+                )}
+              </a>
+              {item.children && (
+                <ul class="gara-header__sub">
+                  {item.children.map((child) => (
+                    <li>
+                      <a href={child.href}>{child.label}</a>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </li>
+          ))}
+          <li class="gara-header__item">
+            <a href={itHref} class:list={['gara-header__link', { 'is-current': lang === 'it' }]} hreflang="it" lang="it">IT</a>
+          </li>
+          <li class="gara-header__item">
+            <a href={enHref} class:list={['gara-header__link', { 'is-current': lang === 'en' }]} hreflang="en" lang="en">EN</a>
+          </li>
+        </ul>
+      </nav>
+
+      <button
+        type="button"
+        class="gara-header__burger"
+        id="mobile-menu-btn"
+        aria-expanded="false"
+        aria-controls="mobile-menu"
+        aria-label={labels.menu}
+      >
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </div>
+
+  <div id="mobile-menu" class="gara-header__mobile" hidden>
+    <ul>
+      {items.map((item) => (
+        <li>
+          <a href={item.href}>{item.label}</a>
+          {item.children && (
+            <ul>
+              {item.children.map((child) => (
+                <li><a href={child.href}>{child.label}</a></li>
+              ))}
+            </ul>
+          )}
+        </li>
+      ))}
+      <li class="gara-header__mobile-langs">
+        <a href={itHref} class:list={{ 'is-current': lang === 'it' }} hreflang="it">IT</a>
+        <a href={enHref} class:list={{ 'is-current': lang === 'en' }} hreflang="en">EN</a>
+      </li>
+    </ul>
+  </div>
+</header>
+
+<style>
+  .gara-header {
+    position: relative;
+    z-index: 10010; /* above hero (WP .fusion-header-wrapper) */
+    background: #fff;
+    color: #747474;
+  }
+
+  .gara-header__bar {
+    height: 84px;
+    padding: 0 30px;
+    background: #fff;
+  }
+
+  .gara-header__row {
+    position: relative;
+    max-width: 1280px;
+    height: 84px;
+    margin: 0 auto;
+  }
+
+  .gara-header__logo {
+    float: left;
+    margin: 15px 0 0;
+    line-height: 0;
+  }
+
+  .gara-header__logo img {
+    display: block;
+    width: 219px;
+    height: 50px;
+  }
+
+  .gara-header__nav {
+    float: right;
+    height: 84px;
+  }
+
+  .gara-header__menu {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    height: 84px;
+  }
+
+  .gara-header__item {
+    float: left;
+    position: relative;
+    margin: 0;
+    padding: 0 30px 0 0;
+    height: 84px;
+  }
+
+  .gara-header__link {
+    display: flex;
+    align-items: center;
+    height: 84px;
+    padding: 0;
+    font-family: Montserrat, Arial, Helvetica, sans-serif;
+    font-size: 14px;
+    font-weight: 400;
+    line-height: 14px;
+    letter-spacing: normal;
+    text-transform: none;
+    text-decoration: none;
+    color: #000;
+    white-space: nowrap;
+  }
+
+  .gara-header__link.is-current {
+    color: #333;
+  }
+
+  .gara-header__link:hover {
+    color: #333;
+  }
+
+  .gara-header__caret {
+    display: inline-flex;
+    margin-left: 6px;
+    color: #000;
+  }
+
+  /* Dropdown — measured Avada defaults: bg #f2efef, width 180, top border 3px brand hover */
+  .gara-header__sub {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    min-width: 180px;
+    background: #f2efef;
+    border-top: 3px solid #a0ce4e;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
+    opacity: 0;
+    visibility: hidden;
+    z-index: 100;
+  }
+
+  .gara-header__item:hover > .gara-header__sub {
+    opacity: 1;
+    visibility: visible;
+  }
+
+  .gara-header__sub a {
+    display: block;
+    padding: 12px 16px;
+    font-family: "Open Sans", Arial, Helvetica, sans-serif;
+    font-size: 13px;
+    font-weight: 400;
+    color: #333;
+    text-decoration: none;
+    border-bottom: 1px solid #dcdadb;
+  }
+
+  .gara-header__sub a:hover {
+    background: #f8f8f8;
+  }
+
+  .gara-header__burger {
+    display: none;
+    float: right;
+    margin-top: 28px;
+    width: 28px;
+    height: 22px;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    cursor: pointer;
+  }
+
+  .gara-header__burger span {
+    display: block;
+    height: 2px;
+    margin: 5px 0;
+    background: #333;
+  }
+
+  .gara-header__mobile {
+    display: none;
+    background: #f9f9f9;
+    border-top: 1px solid #dadada;
+  }
+
+  .gara-header__mobile[hidden] {
+    display: none !important;
+  }
+
+  .gara-header__mobile ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  .gara-header__mobile > ul > li > a {
+    display: block;
+    padding: 14px 20px;
+    font-family: Montserrat, Arial, Helvetica, sans-serif;
+    font-size: 14px;
+    color: #333;
+    text-decoration: none;
+    border-bottom: 1px solid #dadada;
+  }
+
+  .gara-header__mobile ul ul a {
+    display: block;
+    padding: 10px 20px 10px 32px;
+    font-size: 13px;
+    color: #555;
+    text-decoration: none;
+    border-bottom: 1px solid #eee;
+  }
+
+  .gara-header__mobile-langs {
+    display: flex;
+    gap: 16px;
+    padding: 14px 20px;
+  }
+
+  .gara-header__mobile-langs a {
+    border: 0 !important;
+    padding: 0 !important;
+  }
+
+  .gara-header__mobile-langs a.is-current {
+    color: #96c222;
+  }
+
+  @media (max-width: 1099px) {
+    .gara-header__nav {
+      display: none;
+    }
+    .gara-header__burger {
+      display: block;
+    }
+    .gara-header__mobile:not([hidden]) {
+      display: block;
+    }
+  }
+
+  /* clearfix */
+  .gara-header__row::after {
+    content: "";
+    display: table;
+    clear: both;
+  }
+</style>
+
+<script>
+  const btn = document.getElementById('mobile-menu-btn');
+  const menu = document.getElementById('mobile-menu');
+  btn?.addEventListener('click', () => {
+    const open = menu?.hasAttribute('hidden');
+    if (open) {
+      menu?.removeAttribute('hidden');
+      btn.setAttribute('aria-expanded', 'true');
+    } else {
+      menu?.setAttribute('hidden', '');
+      btn.setAttribute('aria-expanded', 'false');
+    }
+  });
+</script>

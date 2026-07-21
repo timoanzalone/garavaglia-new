@@ -1,0 +1,642 @@
+---
+/**
+ * Company page — measured from garavaglia.test/company/ @ 1920, 2026-07-21
+ *
+ * Text sections (.fusion-fullwidth nonhundred):
+ * - pad 0 30px; margin 60/40 (who/what) or 80 (quality/partners/over/clients)
+ * - row max-width 1280; 1/3 cols ~392 + 4% gutter (~51px)
+ * - h1/h2: Raleway 48 / 400 / #333; h1 lh 67.2, h2 lh 57.6
+ * - separator: 3px #e2e3e8, max-width 170, margin-bottom 35
+ * - body: Open Sans 15 / 25.5 / #747474; p margin-bottom 20
+ *
+ * Image strips (hundred-percent): margin 45 0; no side pad; equal cols, no gap
+ * - triple 640×480; pair 960×540; over quad 480×449
+ *
+ * Over button (IT only): bg #e5312a; pad 20 60; 18px uppercase; border 1px rgba(255,255,255,0.75)
+ * Clients carousel: 6 visible; item 204px; margin 11; img ~182×115; nav arrows 25×65 #999
+ */
+import { companyContent } from '../data/company';
+import { t, type Locale } from '../i18n';
+
+interface Props {
+  lang?: Locale;
+}
+
+const { lang = 'it' } = Astro.props;
+const c = companyContent[lang];
+const labels = t(lang);
+---
+
+<main class="gara-company">
+  {/* Chi siamo / Who we are */}
+  <section class="gara-company__section gara-company__section--tight-top" id={c.who.id}>
+    <div class="gara-company__row gara-company__row--thirds">
+      <div class="gara-company__col">
+        {c.who.titleTag === 'h1' ? (
+          <h1 class="gara-company__title" style={`line-height: ${c.who.titleLineHeight ?? '57.6px'}`}>{c.who.title}</h1>
+        ) : (
+          <h2 class="gara-company__title">{c.who.title}</h2>
+        )}
+        <div class="gara-company__sep" aria-hidden="true" />
+      </div>
+      <div class="gara-company__col">
+        {c.who.colA.map((p) => <p class="gara-company__p" set:html={p.html} />)}
+      </div>
+      <div class="gara-company__col">
+        {c.who.colB.map((p) => <p class="gara-company__p" set:html={p.html} />)}
+      </div>
+    </div>
+  </section>
+
+  {/* Workshop triple */}
+  <div class="gara-company__images gara-company__images--3">
+    {c.workshopTriple.map((src, i) => (
+      <figure class="gara-company__figure gara-zoomin">
+        <img src={src} alt="" width="800" height="600" loading={i === 0 ? 'eager' : 'lazy'} />
+      </figure>
+    ))}
+  </div>
+
+  {/* Cosa facciamo / What we do */}
+  <section class="gara-company__section" id={c.what.id}>
+    <div class="gara-company__row gara-company__row--thirds">
+      <div class="gara-company__col">
+        <h2 class="gara-company__title">{c.what.title}</h2>
+        <div class="gara-company__sep" aria-hidden="true" />
+      </div>
+      <div class="gara-company__col">
+        {c.what.colA.map((p) => <p class="gara-company__p" set:html={p.html} />)}
+      </div>
+      <div class="gara-company__col">
+        {c.what.colB.map((p) => <p class="gara-company__p" set:html={p.html} />)}
+      </div>
+    </div>
+  </section>
+
+  {/* Workshop pair */}
+  <div class="gara-company__images gara-company__images--2">
+    {c.workshopPair.map((src) => (
+      <figure class="gara-company__figure gara-zoomin">
+        <img src={src} alt="" width="1200" height="675" loading="lazy" />
+      </figure>
+    ))}
+  </div>
+
+  {/* Quality */}
+  <section class="gara-company__section gara-company__section--spaced" id={c.quality.id}>
+    <div class="gara-company__row gara-company__row--thirds">
+      <div class="gara-company__col">
+        <h2 class="gara-company__title">{c.quality.title}</h2>
+        <div class="gara-company__sep" aria-hidden="true" />
+        <div class="gara-company__logos">
+          {c.quality.logos.map((logo) => (
+            <div class="gara-company__logo-cell">
+              <img
+                src={logo.src}
+                alt={logo.alt}
+                width={logo.width}
+                height={logo.height}
+                style={`width: ${logo.width}px; height: ${logo.height}px;`}
+                loading="lazy"
+              />
+            </div>
+          ))}
+        </div>
+      </div>
+      <div class="gara-company__col gara-company__col--vcenter">
+        {c.quality.colA.map((p) => <p class="gara-company__p" set:html={p.html} />)}
+      </div>
+      <div class="gara-company__col gara-company__col--vcenter">
+        {c.quality.colB.map((p) => <p class="gara-company__p" set:html={p.html} />)}
+      </div>
+    </div>
+  </section>
+
+  {/* Partners */}
+  <section class="gara-company__section gara-company__section--spaced" id={c.partners.id}>
+    <div class="gara-company__row gara-company__row--partners">
+      <div class="gara-company__col">
+        <h2 class="gara-company__title">{c.partners.title}</h2>
+        <div class="gara-company__sep" aria-hidden="true" />
+      </div>
+      <div class="gara-company__col gara-company__col--vcenter">
+        <p class="gara-company__p">{c.partners.body}</p>
+      </div>
+    </div>
+  </section>
+
+  {/* Over */}
+  <section class="gara-company__section gara-company__section--spaced" id={c.over.id}>
+    <div class="gara-company__row gara-company__row--partners">
+      <div class="gara-company__col">
+        <h2 class="gara-company__title gara-company__title--over">
+          <b>{c.over.title}</b>
+        </h2>
+        <div class="gara-company__sep" aria-hidden="true" />
+        <img
+          class="gara-company__over-logo"
+          src={c.over.logo}
+          alt="Over"
+          width="120"
+          height="149"
+          loading="lazy"
+        />
+      </div>
+      <div class="gara-company__col">
+        <h2 class="gara-company__title gara-company__title--over">
+          <b set:html={c.over.subtitleHtml} />
+        </h2>
+        <p class="gara-company__p" set:html={c.over.bodyHtml} />
+        {c.over.buttonLabel && (
+          <a
+            class="gara-company__over-btn"
+            href={c.over.buttonHref}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            {c.over.buttonLabel}
+          </a>
+        )}
+      </div>
+    </div>
+  </section>
+
+  {/* Over images */}
+  <div class="gara-company__images gara-company__images--4">
+    {c.over.images.map((src) => (
+      <figure class="gara-company__figure gara-zoomin">
+        <img src={src} alt="" width="1252" height="1172" loading="lazy" />
+      </figure>
+    ))}
+  </div>
+
+  {/* Clients carousel — WP: 6 cols, item 204, margin 11, page by 6, touchscroll */}
+  <section class="gara-company__section gara-company__section--spaced" id={c.clients.id}>
+    <div class="gara-company__row gara-company__row--thirds">
+      <div class="gara-company__col">
+        <h2 class="gara-company__title gara-company__title--clients">{c.clients.title}</h2>
+      </div>
+    </div>
+    <div class="gara-company__row">
+      <div
+        class="gara-company__carousel"
+        data-company-carousel
+        data-columns="6"
+        data-item-width="204"
+        data-item-margin="11"
+      >
+        <button class="gara-company__nav gara-company__nav--prev" type="button" aria-label={labels.previous} data-carousel-prev />
+        <div class="gara-company__carousel-viewport" data-carousel-viewport>
+          <ul class="gara-company__carousel-track" data-carousel-track>
+            {c.clients.logos.map((src) => (
+              <li class="gara-company__carousel-item">
+                <img src={src} alt="" width="182" height="115" loading="lazy" draggable="false" />
+              </li>
+            ))}
+          </ul>
+        </div>
+        <button class="gara-company__nav gara-company__nav--next" type="button" aria-label={labels.next} data-carousel-next />
+      </div>
+    </div>
+  </section>
+</main>
+
+<script>
+  function initCarousels() {
+    document.querySelectorAll<HTMLElement>('[data-company-carousel]').forEach((root) => {
+      if (root.dataset.carouselReady === '1') return;
+      root.dataset.carouselReady = '1';
+
+      const viewport = root.querySelector<HTMLElement>('[data-carousel-viewport]');
+      const track = root.querySelector<HTMLElement>('[data-carousel-track]');
+      const prev = root.querySelector<HTMLButtonElement>('[data-carousel-prev]');
+      const next = root.querySelector<HTMLButtonElement>('[data-carousel-next]');
+      const items = [...root.querySelectorAll<HTMLElement>('.gara-company__carousel-item')];
+      if (!viewport || !track || !prev || !next || items.length === 0) return;
+
+      const itemMargin = Number(root.dataset.itemMargin || 11);
+      let index = 0;
+      let pageSize = 6;
+      let dragStartX = 0;
+      let dragDelta = 0;
+      let dragging = false;
+
+      const itemStride = () => {
+        const item = items[0];
+        return item.offsetWidth + itemMargin;
+      };
+
+      const maxIndex = () => Math.max(0, items.length - pageSize);
+
+      const updatePageSize = () => {
+        const w = viewport.clientWidth;
+        if (w < 480) pageSize = 2;
+        else if (w < 720) pageSize = 3;
+        else if (w < 1000) pageSize = 4;
+        else pageSize = Number(root.dataset.columns || 6);
+        index = Math.min(index, maxIndex());
+        apply(false);
+      };
+
+      const apply = (animate = true) => {
+        track.style.transition = animate ? 'transform 0.45s ease' : 'none';
+        track.style.transform = `translate3d(${-index * itemStride()}px, 0, 0)`;
+        prev.disabled = index <= 0;
+        next.disabled = index >= maxIndex();
+        prev.setAttribute('aria-disabled', String(index <= 0));
+        next.setAttribute('aria-disabled', String(index >= maxIndex()));
+      };
+
+      const go = (delta: number) => {
+        index = Math.min(maxIndex(), Math.max(0, index + delta));
+        apply(true);
+      };
+
+      prev.addEventListener('click', () => go(-pageSize));
+      next.addEventListener('click', () => go(pageSize));
+
+      // Touch / pointer swipe (WP data-touchscroll=yes)
+      viewport.addEventListener('pointerdown', (e) => {
+        if (e.pointerType === 'mouse' && e.button !== 0) return;
+        dragging = true;
+        dragStartX = e.clientX;
+        dragDelta = 0;
+        track.style.transition = 'none';
+        viewport.setPointerCapture(e.pointerId);
+      });
+
+      viewport.addEventListener('pointermove', (e) => {
+        if (!dragging) return;
+        dragDelta = e.clientX - dragStartX;
+        track.style.transform = `translate3d(${-index * itemStride() + dragDelta}px, 0, 0)`;
+      });
+
+      const endDrag = () => {
+        if (!dragging) return;
+        dragging = false;
+        const threshold = itemStride() * 0.25;
+        if (dragDelta > threshold) go(-Math.max(1, Math.round(dragDelta / itemStride())));
+        else if (dragDelta < -threshold) go(Math.max(1, Math.round(-dragDelta / itemStride())));
+        else apply(true);
+        dragDelta = 0;
+      };
+
+      viewport.addEventListener('pointerup', endDrag);
+      viewport.addEventListener('pointercancel', endDrag);
+
+      window.addEventListener('resize', updatePageSize);
+      updatePageSize();
+    });
+  }
+
+  initCarousels();
+  document.addEventListener('astro:page-load', initCarousels);
+</script>
+
+<style>
+  .gara-company {
+    background: #fff;
+    color: #747474;
+    font-family: var(--gara-font-body);
+    font-size: 15px;
+    font-weight: 400;
+    line-height: 25.5px;
+  }
+
+  .gara-company__section {
+    margin: 60px 0 40px;
+    padding: 0 30px;
+  }
+
+  .gara-company__section--tight-top {
+    margin-top: 60px;
+  }
+
+  .gara-company__section--spaced {
+    margin: 80px 0;
+  }
+
+  .gara-company__row {
+    max-width: 1280px;
+    margin: 0 auto;
+  }
+
+  .gara-company__row--thirds {
+    display: flex;
+    flex-wrap: wrap;
+    column-gap: 4%;
+    row-gap: 20px;
+  }
+
+  .gara-company__row--thirds > .gara-company__col {
+    flex: 0 0 30.6666%;
+    max-width: 30.6666%;
+    margin-bottom: 20px;
+  }
+
+  .gara-company__row--partners {
+    display: flex;
+    flex-wrap: wrap;
+    column-gap: 4%;
+    row-gap: 20px;
+  }
+
+  .gara-company__row--partners > .gara-company__col:first-child {
+    flex: 0 0 30.6666%;
+    max-width: 30.6666%;
+    margin-bottom: 20px;
+  }
+
+  .gara-company__row--partners > .gara-company__col:last-child {
+    flex: 0 0 65.3333%;
+    max-width: 65.3333%;
+    margin-bottom: 20px;
+  }
+
+  .gara-company__col--vcenter {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+
+  .gara-company__title {
+    margin: 0 0 52.8px;
+    padding: 0;
+    font-family: var(--gara-font-heading);
+    font-size: 48px;
+    font-weight: 400;
+    line-height: 57.6px;
+    color: #333;
+  }
+
+  h1.gara-company__title {
+    margin-bottom: 32.16px;
+  }
+
+  .gara-company__title--over {
+    margin-bottom: 16px;
+  }
+
+  .gara-company__title--clients {
+    margin: 0 0 52.8px;
+  }
+
+  #clients .gara-company__row--thirds {
+    margin-bottom: 0;
+  }
+
+  #clients .gara-company__carousel {
+    margin-top: 0;
+  }
+
+  .gara-company__sep {
+    width: 170px;
+    max-width: 170px;
+    height: 0;
+    margin: 0 0 35px;
+    border: 0;
+    border-top: 3px solid #e2e3e8;
+  }
+
+  .gara-company__p {
+    margin: 0 0 20px;
+    padding: 0;
+    font-family: var(--gara-font-body);
+    font-size: 15px;
+    font-weight: 400;
+    line-height: 25.5px;
+    color: #747474;
+  }
+
+  .gara-company__p :global(b) {
+    font-weight: 700;
+  }
+
+  .gara-company__logos {
+    display: flex;
+    flex-wrap: nowrap;
+    justify-content: space-between;
+    align-items: flex-start;
+    width: 100%;
+    max-width: 392px;
+  }
+
+  .gara-company__logo-cell {
+    flex: 0 0 120px;
+    width: 120px;
+    display: flex;
+    align-items: flex-start;
+    justify-content: flex-start;
+    padding-top: 40px;
+  }
+
+  .gara-company__logo-cell:nth-child(2) {
+    justify-content: center;
+  }
+
+  .gara-company__logo-cell:nth-child(3) {
+    justify-content: flex-start;
+  }
+
+  .gara-company__logo-cell img {
+    display: block;
+    max-width: 100%;
+    height: auto;
+  }
+
+  .gara-company__over-logo {
+    display: block;
+    width: 120px;
+    height: auto;
+    max-width: 120px;
+  }
+
+  .gara-company__over-btn {
+    display: inline-block;
+    margin-top: 10px;
+    padding: 20px 60px;
+    background: #e5312a;
+    color: rgba(255, 255, 255, 0.75);
+    border: 1px solid rgba(255, 255, 255, 0.75);
+    border-radius: 0;
+    font-family: var(--gara-font-body);
+    font-size: 18px;
+    font-weight: 400;
+    line-height: 17px;
+    text-transform: uppercase;
+    text-decoration: none;
+  }
+
+  .gara-company__over-btn:hover {
+    color: #fff;
+  }
+
+  .gara-company__images {
+    display: flex;
+    width: 100%;
+    margin: 45px 0;
+    padding: 0;
+  }
+
+  .gara-company__figure {
+    margin: 0 0 20px;
+    padding: 0;
+    flex: 1 1 0;
+    min-width: 0;
+    line-height: 0;
+  }
+
+  .gara-company__figure img {
+    display: block;
+    width: 100%;
+    height: auto;
+    vertical-align: top;
+  }
+
+  /* Zoomin needs a clipped box; keep figure as the hover root */
+  .gara-company__figure.gara-zoomin {
+    overflow: hidden;
+  }
+
+  .gara-company__images--3 .gara-company__figure {
+    flex: 0 0 33.3333%;
+    max-width: 33.3333%;
+  }
+
+  .gara-company__images--2 .gara-company__figure {
+    flex: 0 0 50%;
+    max-width: 50%;
+  }
+
+  .gara-company__images--4 .gara-company__figure {
+    flex: 0 0 25%;
+    max-width: 25%;
+  }
+
+  .gara-company__carousel {
+    position: relative;
+    padding: 0 0;
+  }
+
+  .gara-company__carousel-viewport {
+    overflow: hidden;
+    width: 100%;
+    margin-left: -11px;
+    touch-action: pan-y;
+    cursor: grab;
+    user-select: none;
+  }
+
+  .gara-company__carousel-viewport:active {
+    cursor: grabbing;
+  }
+
+  .gara-company__carousel-track {
+    display: flex;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    width: max-content;
+    will-change: transform;
+  }
+
+  .gara-company__carousel-item {
+    flex: 0 0 204px;
+    width: 204px;
+    margin-left: 11px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 115px;
+  }
+
+  .gara-company__carousel-item img {
+    display: block;
+    width: 182px;
+    height: 115px;
+    object-fit: contain;
+    pointer-events: none;
+  }
+
+  .gara-company__nav {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 2;
+    width: 25px;
+    height: 65px;
+    padding: 0;
+    border: 0;
+    background: #999;
+    opacity: 0.8;
+    cursor: pointer;
+  }
+
+  .gara-company__nav:hover:not(:disabled) {
+    opacity: 1;
+  }
+
+  .gara-company__nav:disabled {
+    opacity: 0.35;
+    cursor: default;
+  }
+
+  .gara-company__nav--prev {
+    left: 0;
+  }
+
+  .gara-company__nav--next {
+    right: 0;
+  }
+
+  .gara-company__nav::before {
+    content: '';
+    display: block;
+    width: 0;
+    height: 0;
+    margin: 0 auto;
+    border-style: solid;
+  }
+
+  .gara-company__nav--prev::before {
+    border-width: 8px 9px 8px 0;
+    border-color: transparent #fff transparent transparent;
+  }
+
+  .gara-company__nav--next::before {
+    border-width: 8px 0 8px 9px;
+    border-color: transparent transparent transparent #fff;
+  }
+
+  @media (max-width: 720px) {
+    .gara-company__carousel-item {
+      flex-basis: 160px;
+      width: 160px;
+    }
+
+    .gara-company__carousel-item img {
+      width: 140px;
+      height: 88px;
+    }
+  }
+
+  @media (max-width: 900px) {
+    .gara-company__row--thirds > .gara-company__col,
+    .gara-company__row--partners > .gara-company__col:first-child,
+    .gara-company__row--partners > .gara-company__col:last-child {
+      flex: 0 0 100%;
+      max-width: 100%;
+    }
+
+    .gara-company__images {
+      flex-wrap: wrap;
+    }
+
+    .gara-company__images--3 .gara-company__figure,
+    .gara-company__images--2 .gara-company__figure,
+    .gara-company__images--4 .gara-company__figure {
+      flex: 0 0 100%;
+      max-width: 100%;
+    }
+  }
+</style>

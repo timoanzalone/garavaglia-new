@@ -1,0 +1,43 @@
+---
+import { switchLocalePath, t, type Locale } from '../i18n';
+
+interface Props {
+  title: string;
+  description?: string;
+  lang?: Locale;
+}
+
+const { title, lang = 'it' } = Astro.props;
+const description = Astro.props.description ?? t(lang).metaDescription;
+const alternatePath = switchLocalePath(lang, Astro.url.pathname);
+const selfPath = Astro.url.pathname;
+---
+
+<!doctype html>
+<html lang={lang}>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content={description} />
+    <link rel="icon" type="image/png" href="/favicon-32.png" />
+    <link rel="alternate" hreflang={lang} href={selfPath} />
+    <link rel="alternate" hreflang={lang === 'it' ? 'en' : 'it'} href={alternatePath} />
+    <link rel="alternate" hreflang="x-default" href={lang === 'it' ? selfPath : alternatePath} />
+    <meta name="generator" content={Astro.generator} />
+    <title>{title}</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Open+Sans:wght@400;600;700&family=Raleway:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body class="min-h-screen antialiased">
+    <slot />
+  </body>
+</html>
+
+<style is:global>
+  /* global design tokens + shared utilities (incl. .gara-zoomin) */
+  @import '../styles/global.css';
+</style>

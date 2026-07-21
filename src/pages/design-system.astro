@@ -1,0 +1,206 @@
+---
+import Layout from '../layouts/Layout.astro';
+import { tokenGroups, typography, layout, effects, colors } from '../data/tokens';
+---
+
+<Layout title="Design System — Garavaglia" lang="it">
+  <div class="border-b border-border bg-header sticky top-0 z-50">
+    <div class="site-container flex items-center justify-between h-[var(--gara-header-height)]">
+      <a href="/" class="font-nav text-sm text-text-black hover:text-brand">← Back to site</a>
+      <span class="font-nav text-xs uppercase tracking-wider text-text-muted">Design System · from Avada</span>
+    </div>
+  </div>
+
+  <main class="site-container py-12 space-y-16">
+    <header class="max-w-3xl">
+      <p class="font-nav text-xs uppercase tracking-[0.15em] text-brand mb-3">Foundation</p>
+      <h1 class="text-[clamp(32px,5vw,50px)] leading-tight mb-4">Garavaglia design system</h1>
+      <p class="text-text text-[15px] leading-[1.7]">
+        Tokens extracted from the live Avada theme on <code class="text-text-strong">garavaglia.test</code>.
+        Review this page before we restyle components. Astro uses <strong class="text-text-strong">Tailwind CSS v4</strong>
+        with these values mapped in <code class="text-text-strong">src/styles/tokens.css</code>.
+      </p>
+    </header>
+
+    <!-- Colors -->
+    <section>
+      <h2 class="text-2xl mb-6">Color</h2>
+      <div class="space-y-10">
+        {tokenGroups.map((group) => (
+          <div>
+            <h3 class="font-nav text-xs uppercase tracking-wider text-text-black mb-4">{group.name}</h3>
+            <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
+              {group.items.map((item) => (
+                <div class="border border-border">
+                  <div class="h-20" style={`background:${item.value}`} />
+                  <div class="p-3 text-[12px] leading-snug">
+                    <div class="font-nav text-text-black">{item.name}</div>
+                    <div class="font-mono text-text mt-1">{item.value}</div>
+                    {'note' in item && item.note && (
+                      <div class="text-text-muted mt-1 text-[11px]">{item.note}</div>
+                    )}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        ))}
+      </div>
+    </section>
+
+    <!-- Type -->
+    <section>
+      <h2 class="text-2xl mb-6">Typography</h2>
+      <div class="grid gap-8 lg:grid-cols-2">
+        <div class="border border-border p-6 space-y-6">
+          <div>
+            <p class="font-nav text-[11px] uppercase tracking-wider text-text-muted mb-2">Hero slide · Raleway · h2 · 60px / 72px</p>
+            <p class="font-heading text-[40px] md:text-[60px] leading-[72px] text-text-strong">
+              L'arte di creare emozioni.
+            </p>
+          </div>
+          <div>
+            <p class="font-nav text-[11px] uppercase tracking-wider text-text-muted mb-2">Heading · Raleway · H2 default 48px</p>
+            <p class="font-heading text-[32px] md:text-[48px] leading-[1.2] text-text-strong">
+              Case Study selezionate
+            </p>
+          </div>
+          <div>
+            <p class="font-nav text-[11px] uppercase tracking-wider text-text-muted mb-2">H6 · Raleway · 11px</p>
+            <p class="font-heading text-[11px] text-text-strong">All headings use Raleway</p>
+          </div>
+          <div>
+            <p class="font-nav text-[11px] uppercase tracking-wider text-text-muted mb-2">Body · Open Sans · 15px / 1.7</p>
+            <p style={`font-family:${typography.body.family};font-size:${typography.body.size};line-height:${typography.body.lineHeight};color:${typography.body.color}`}>
+              Da oltre quarant’anni Garavaglia opera nel settore degli allestimenti scenografici per la Grande Distribuzione,
+              fiere e punti vendita, parchi divertimento e aree d’intrattenimento.
+            </p>
+          </div>
+          <div>
+            <p class="font-nav text-[11px] uppercase tracking-wider text-text-muted mb-2">Nav · Montserrat · 14px</p>
+            <p class="font-nav text-[14px] text-text-black uppercase tracking-wide">
+              COMPANY &nbsp; AREE &nbsp; CASE STUDY &nbsp; GALLERY
+            </p>
+          </div>
+        </div>
+
+        <div class="border border-border p-6 overflow-x-auto">
+          <table class="w-full text-left text-[13px]">
+            <thead>
+              <tr class="border-b border-border font-nav text-text-black">
+                <th class="py-2 pr-4">Role</th>
+                <th class="py-2 pr-4">Family</th>
+                <th class="py-2">Size</th>
+              </tr>
+            </thead>
+            <tbody class="text-text">
+              <tr class="border-b border-border/60"><td class="py-2">Body</td><td>Open Sans</td><td>15 / 1.7</td></tr>
+              <tr class="border-b border-border/60"><td class="py-2">H1</td><td>Raleway</td><td>50px</td></tr>
+              <tr class="border-b border-border/60"><td class="py-2">H2</td><td>Raleway</td><td>48px</td></tr>
+              <tr class="border-b border-border/60"><td class="py-2">H3</td><td>Raleway</td><td>16px</td></tr>
+              <tr class="border-b border-border/60"><td class="py-2">H4</td><td>Raleway</td><td>24px</td></tr>
+              <tr class="border-b border-border/60"><td class="py-2">Hero (h2)</td><td>Raleway</td><td>60 / 72</td></tr>
+              <tr class="border-b border-border/60"><td class="py-2">H6</td><td>Raleway</td><td>11px</td></tr>
+              <tr class="border-b border-border/60"><td class="py-2">Nav</td><td>Montserrat</td><td>14px</td></tr>
+              <tr><td class="py-2">Dropdown</td><td>Montserrat</td><td>13px</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- Layout -->
+    <section>
+      <h2 class="text-2xl mb-6">Layout</h2>
+      <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-4 text-[13px]">
+        {[
+          ['Site width', layout.siteWidth],
+          ['Header / nav height', layout.headerHeight],
+          ['Content padding', layout.contentPadding],
+          ['Logo', `${layout.logo.width}×${layout.logo.height}`],
+          ['Dropdown width', layout.dropdownWidth],
+          ['Portfolio columns', String(layout.portfolioColumns)],
+          ['Portfolio gap', layout.portfolioGap],
+          ['Slideshow', `${effects.slideshow.speed}ms`],
+        ].map(([k, v]) => (
+          <div class="border border-border p-4">
+            <div class="font-nav text-[11px] uppercase tracking-wider text-text-muted mb-1">{k}</div>
+            <div class="text-text-strong font-mono">{v}</div>
+          </div>
+        ))}
+      </div>
+      <div class="mt-6 border border-dashed border-brand/40 bg-brand/5 p-4 text-[13px] text-text-strong">
+        Content column preview — max-width {layout.siteWidth}, padding {layout.contentPadding}
+      </div>
+    </section>
+
+    <!-- Components preview -->
+    <section>
+      <h2 class="text-2xl mb-6">Component patterns (target)</h2>
+      <div class="grid lg:grid-cols-2 gap-8">
+        <!-- Nav sample -->
+        <div class="border border-border">
+          <div class="px-4 border-b border-border flex items-center justify-between h-[84px] bg-header">
+            <img src="/brand/logo.png" alt="" class="h-[50px] w-auto" />
+            <div class="hidden sm:flex items-center gap-5 font-nav text-[14px] text-text-black">
+              <span class="relative after:absolute after:left-0 after:right-0 after:-bottom-1 after:h-[3px] after:bg-brand-hover">COMPANY</span>
+              <span>AREE</span>
+              <span>CASE STUDY</span>
+              <span class="text-brand">IT</span>
+              <span class="text-text-muted">EN</span>
+            </div>
+          </div>
+          <div class="p-3 text-[12px] text-text">Header: white, sticky, 84px nav, Montserrat 14px, bar highlight #a0ce4e</div>
+        </div>
+
+        <!-- Footer sample -->
+        <div class="border border-border overflow-hidden">
+          <div class="bg-footer text-white p-8">
+            <div class="font-heading text-[18px] mb-2">Footer</div>
+            <p class="text-[13px] opacity-90">Background is brand green #96c222 — not dark grey.</p>
+          </div>
+          <div class="bg-copyright px-8 py-4 text-[12px] text-text-muted border-t border-border">
+            Garavaglia · P.IVA · Cookies
+          </div>
+        </div>
+
+        <!-- Area labels -->
+        <div class="border border-border p-6">
+          <p class="font-nav text-[11px] uppercase tracking-wider text-text-muted mb-4">Area labels</p>
+          <div class="flex flex-wrap gap-2">
+            {Object.entries(colors.area).map(([name, hex]) => (
+              <span class="text-white text-[12px] font-bold px-2.5 py-1" style={`background:${hex}`}>
+                {name.toUpperCase()}
+              </span>
+            ))}
+          </div>
+        </div>
+
+        <!-- Portfolio rollover -->
+        <div class="border border-border p-6">
+          <p class="font-nav text-[11px] uppercase tracking-wider text-text-muted mb-4">Portfolio rollover</p>
+          <div class="relative aspect-[4/3] overflow-hidden group max-w-sm">
+            <img src="/portfolio/chicchi-fritti.jpg" alt="" class="w-full h-full object-cover" />
+            <div
+              class="absolute inset-0 flex items-center justify-center translate-y-full group-hover:translate-y-0 transition-transform duration-500"
+              style={`background:${effects.portfolioRollover.gradientTop}`}
+            >
+              <span class="text-white font-bold text-xl px-4 text-center">Chicchi & Fritti</span>
+            </div>
+          </div>
+          <p class="text-[12px] text-text mt-3">Direction: from bottom · fill: brand primary (not category color)</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="border-t border-border pt-10 pb-16">
+      <h2 class="text-2xl mb-3">Next</h2>
+      <ol class="list-decimal pl-5 space-y-2 text-[15px] text-text leading-relaxed max-w-2xl">
+        <li>Restyle Header to match Avada (84px, Montserrat, bar highlight, dropdown #f2efef).</li>
+        <li>Restyle Footer to green bar + white copyright strip.</li>
+        <li>Rebuild home sections using these tokens only (no ad-hoc greys/limes).</li>
+        <li>Portfolio rollover uses brand green, not area colors.</li>
+      </ol>
+    </section>
+  </main>
+</Layout>

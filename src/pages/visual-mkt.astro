@@ -1,0 +1,16 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import AreaPage from '../components/AreaPage.astro';
+import { getArea } from '../lib/content';
+
+const entry = await getArea('visual-mkt', 'it');
+if (!entry) throw new Error('Missing visual-mkt.it content');
+---
+
+<Layout title={entry.data.metaTitle} description={entry.data.metaDescription} lang="it">
+  <Header lang="it" />
+  <AreaPage entry={entry} />
+  <Footer lang="it" />
+</Layout>

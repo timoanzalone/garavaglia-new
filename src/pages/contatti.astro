@@ -1,0 +1,15 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import Contact from '../components/Contact.astro';
+import { contactContent } from '../data/contact';
+
+const { title } = contactContent.it;
+---
+
+<Layout title={title} lang="it">
+  <Header lang="it" />
+  <Contact lang="it" />
+  <Footer lang="it" />
+</Layout>

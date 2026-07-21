@@ -1,0 +1,18 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import CaseStudiesPage from '../components/CaseStudiesPage.astro';
+import { getCaseStudies } from '../lib/content';
+
+const studies = await getCaseStudies('it');
+---
+
+<Layout
+  title="Case Study - Garavaglia - Grandi scenografie e allestimenti natalizi."
+  lang="it"
+>
+  <Header lang="it" />
+  <CaseStudiesPage lang="it" studies={studies} />
+  <Footer lang="it" />
+</Layout>
