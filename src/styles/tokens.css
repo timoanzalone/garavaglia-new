@@ -65,8 +65,10 @@
   --gara-dropdown-border-top: 3px;
   --gara-portfolio-gap: 20px;
 
-  /* Motion (light refresh) */
+  /* Motion (noticeable refresh) */
   --gara-ease: cubic-bezier(0.22, 1, 0.36, 1);
   --gara-duration: 0.35s;
   --gara-duration-fast: 0.2s;
+  --gara-duration-reveal: 0.55s;
+  --gara-reveal-distance: 24px;
 }

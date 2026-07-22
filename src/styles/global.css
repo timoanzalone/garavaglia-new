@@ -1,5 +1,6 @@
 @import "tailwindcss";
 @import "./tokens.css";
+@import "./reveal.css";
 
 /* Map Garavaglia tokens → Tailwind utilities (text-brand, bg-footer, font-heading, …) */
 @theme {

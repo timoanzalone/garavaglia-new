@@ -29,7 +29,7 @@ const labels = t(lang);
 
 <main class="gara-company">
   {/* Chi siamo / Who we are */}
-  <section class="gara-company__section gara-company__section--tight-top" id={c.who.id}>
+  <section class="gara-company__section gara-company__section--tight-top gara-reveal" id={c.who.id}>
     <div class="gara-company__row gara-company__row--thirds">
       <div class="gara-company__col">
         {c.who.titleTag === 'h1' ? (
@@ -51,14 +51,22 @@ const labels = t(lang);
   {/* Workshop triple */}
   <div class="gara-company__images gara-company__images--3">
     {c.workshopTriple.map((src, i) => (
-      <figure class="gara-company__figure gara-zoomin">
+      <figure
+        class:list={[
+          'gara-company__figure',
+          'gara-zoomin',
+          'gara-reveal',
+          i === 1 && 'gara-reveal--delay-1',
+          i === 2 && 'gara-reveal--delay-2',
+        ]}
+      >
         <img src={src} alt="" width="800" height="600" loading={i === 0 ? 'eager' : 'lazy'} />
       </figure>
     ))}
   </div>
 
   {/* Cosa facciamo / What we do */}
-  <section class="gara-company__section" id={c.what.id}>
+  <section class="gara-company__section gara-reveal" id={c.what.id}>
     <div class="gara-company__row gara-company__row--thirds">
       <div class="gara-company__col">
         <h2 class="gara-company__title">{c.what.title}</h2>
@@ -75,15 +83,22 @@ const labels = t(lang);
 
   {/* Workshop pair */}
   <div class="gara-company__images gara-company__images--2">
-    {c.workshopPair.map((src) => (
-      <figure class="gara-company__figure gara-zoomin">
+    {c.workshopPair.map((src, i) => (
+      <figure
+        class:list={[
+          'gara-company__figure',
+          'gara-zoomin',
+          'gara-reveal',
+          i === 1 && 'gara-reveal--delay-1',
+        ]}
+      >
         <img src={src} alt="" width="1200" height="675" loading="lazy" />
       </figure>
     ))}
   </div>
 
   {/* Quality */}
-  <section class="gara-company__section gara-company__section--spaced" id={c.quality.id}>
+  <section class="gara-company__section gara-company__section--spaced gara-reveal" id={c.quality.id}>
     <div class="gara-company__row gara-company__row--thirds">
       <div class="gara-company__col">
         <h2 class="gara-company__title">{c.quality.title}</h2>
@@ -113,7 +128,7 @@ const labels = t(lang);
   </section>
 
   {/* Partners */}
-  <section class="gara-company__section gara-company__section--spaced" id={c.partners.id}>
+  <section class="gara-company__section gara-company__section--spaced gara-reveal" id={c.partners.id}>
     <div class="gara-company__row gara-company__row--partners">
       <div class="gara-company__col">
         <h2 class="gara-company__title">{c.partners.title}</h2>
@@ -126,7 +141,7 @@ const labels = t(lang);
   </section>
 
   {/* Over */}
-  <section class="gara-company__section gara-company__section--spaced" id={c.over.id}>
+  <section class="gara-company__section gara-company__section--spaced gara-reveal" id={c.over.id}>
     <div class="gara-company__row gara-company__row--partners">
       <div class="gara-company__col">
         <h2 class="gara-company__title gara-company__title--over">
@@ -163,15 +178,24 @@ const labels = t(lang);
 
   {/* Over images */}
   <div class="gara-company__images gara-company__images--4">
-    {c.over.images.map((src) => (
-      <figure class="gara-company__figure gara-zoomin">
+    {c.over.images.map((src, i) => (
+      <figure
+        class:list={[
+          'gara-company__figure',
+          'gara-zoomin',
+          'gara-reveal',
+          i % 4 === 1 && 'gara-reveal--delay-1',
+          i % 4 === 2 && 'gara-reveal--delay-2',
+          i % 4 === 3 && 'gara-reveal--delay-3',
+        ]}
+      >
         <img src={src} alt="" width="1252" height="1172" loading="lazy" />
       </figure>
     ))}
   </div>
 
   {/* Clients carousel — WP: 6 cols, item 204, margin 11, page by 6, touchscroll */}
-  <section class="gara-company__section gara-company__section--spaced" id={c.clients.id}>
+  <section class="gara-company__section gara-company__section--spaced gara-reveal" id={c.clients.id}>
     <div class="gara-company__row gara-company__row--thirds">
       <div class="gara-company__col">
         <h2 class="gara-company__title gara-company__title--clients">{c.clients.title}</h2>

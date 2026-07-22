@@ -25,15 +25,21 @@ const c = socialContent[lang];
 <main class="gara-social">
   <div class="gara-social__row">
     <div class="gara-social__outer">
-      <div class="gara-social__title-block">
+      <div class="gara-social__title-block gara-reveal">
         <h1 class="gara-social__title">{c.heading}</h1>
         <div class="gara-social__sep" aria-hidden="true" />
       </div>
 
       <div class="gara-social__videos">
         {
-          c.videos.map((id) => (
-            <div class="gara-social__video">
+          c.videos.map((id, index) => (
+            <div
+              class:list={[
+                'gara-social__video',
+                'gara-reveal',
+                index === 1 && 'gara-reveal--delay-1',
+              ]}
+            >
               <div class="gara-social__video-inner">
                 <iframe
                   src={`https://player.vimeo.com/video/${id}?autoplay=0&autopause=0`}
@@ -48,7 +54,7 @@ const c = socialContent[lang];
         }
       </div>
 
-      <div class="gara-social__body">
+      <div class="gara-social__body gara-reveal">
         <p class="gara-social__p">
           <a href={c.vimeoUrl} target="_blank" rel="noopener noreferrer">{c.vimeoUrl}</a>
         </p>

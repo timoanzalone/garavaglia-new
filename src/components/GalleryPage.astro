@@ -1,0 +1,677 @@
+---
+/**
+ * Gallery masonry — measured from garavaglia.test/gallery-amusement/ @ 1920, 2026-07-22
+ *
+ * Page chrome (#main):
+ * - padding: 90px 30px 45px; bg #fff
+ * - row max-width 1280 centered
+ *
+ * Gallery (fusion-gallery masonry, column_spacing 10):
+ * - container margin: -5px (half spacing); items padding: 5px
+ * - columns: 3 (categories) or 4 (index); landscape/both span 2 cols
+ * - layout: packery (absolute); cell heights via padding-top:
+ *   grid:      calc((100% + 10px) * 0.8 - 5px)
+ *   landscape: calc((100% + 10px) * 0.4 - 5px)
+ *   portrait:  calc((100% + 10px) * 1.6)
+ *   both:      calc((100% + 10px) * 0.8)
+ * - media: cover img in padding-top aspect box; hover-type-zoomin (.gara-zoomin)
+ * - lightbox: yes (iLightbox metro-black, path=vertical)
+ *
+ * Lightbox (fusionLightboxVars @ amusement):
+ * - overlay #000 opacity 0.93; skin metro-black; path vertical
+ * - thumbs strip w 144; thumb w 120, margin 5; active opacity 0.6
+ * - toolbar 54×25 @ 8,8 (close 27×25 + fullscreen)
+ * - arrows on; title on; social off
+ *
+ * Orientation (Avada legacy ratio=1.0): h/w < 0.6 landscape; > 1.2 portrait;
+ * else if width > 2000 → both; else grid.
+ */
+import type { GalleryEntry } from '../lib/content';
+
+interface Props {
+  entry: GalleryEntry;
+}
+
+const { entry } = Astro.props;
+const { columns, columnSpacing, images, title } = entry.data;
+const half = columnSpacing / 2;
+
+const paddingTop: Record<(typeof images)[number]['orientation'], string> = {
+  grid: `calc((100% + ${columnSpacing}px) * 0.8 - ${half}px)`,
+  landscape: `calc((100% + ${columnSpacing}px) * 0.4 - ${half}px)`,
+  portrait: `calc((100% + ${columnSpacing}px) * 1.6)`,
+  both: `calc((100% + ${columnSpacing}px) * 0.8)`,
+};
+---
+
+<main
+  class="gara-gal"
+  style={`--gara-gal-cols: ${columns}; --gara-gal-gap: ${columnSpacing}px; --gara-gal-half: ${half}px;`}
+>
+  <div class="gara-gal__row">
+    <div class="gara-gal__masonry" data-gara-masonry data-cols={columns}>
+      {
+        images.map((image, index) => {
+          const wide =
+            image.orientation === 'landscape' || image.orientation === 'both';
+          return (
+            <figure
+              class:list={[
+                'gara-gal__item',
+                `gara-gal__item--${image.orientation}`,
+                wide && 'is-wide',
+              ]}
+              data-span={wide ? 2 : 1}
+            >
+              <a
+                class="gara-gal__link"
+                href={image.src}
+                data-gara-lightbox
+                data-gallery="gallery"
+                aria-label={image.alt || `${title} ${index + 1}`}
+              >
+                <span
+                  class="gara-gal__media gara-zoomin gara-zoomin--cover"
+                  style={`padding-top: ${paddingTop[image.orientation]};`}
+                >
+                  <img
+                    src={image.src}
+                    alt={image.alt}
+                    width={image.width}
+                    height={image.height}
+                    loading={index < 6 ? 'eager' : 'lazy'}
+                    decoding="async"
+                  />
+                </span>
+              </a>
+            </figure>
+          );
+        })
+      }
+    </div>
+  </div>
+</main>
+
+{/* iLightbox metro-black / vertical — measured garavaglia.test @ 1920 */}
+<div class="gara-lb" data-gara-lb hidden>
+  <div class="gara-lb__overlay" data-gara-lb-close tabindex="-1"></div>
+
+  <div class="gara-lb__toolbar" role="toolbar">
+    <button type="button" class="gara-lb__tool gara-lb__close" data-gara-lb-close aria-label="Close"></button>
+    <button type="button" class="gara-lb__tool gara-lb__fs" data-gara-lb-fs aria-label="Fullscreen"></button>
+  </div>
+
+  <button type="button" class="gara-lb__zone gara-lb__zone--prev" data-gara-lb-prev aria-label="Previous"></button>
+  <button type="button" class="gara-lb__zone gara-lb__zone--next" data-gara-lb-next aria-label="Next"></button>
+
+  <div class="gara-lb__stage">
+    <figure class="gara-lb__holder">
+      <img class="gara-lb__img" data-gara-lb-img alt="" />
+    </figure>
+  </div>
+
+  <aside class="gara-lb__thumbs" aria-label="Gallery thumbnails">
+    <div class="gara-lb__thumbs-inner" data-gara-lb-thumbs>
+      {
+        images.map((image, index) => (
+          <button
+            type="button"
+            class="gara-lb__thumb"
+            data-gara-lb-thumb={index}
+            aria-label={`${title} ${index + 1}`}
+          >
+            <img src={image.src} alt="" width={image.width} height={image.height} loading="lazy" />
+          </button>
+        ))
+      }
+    </div>
+  </aside>
+</div>
+
+<style>
+  /* Measured #main: pad 90 30 45, bg #fff */
+  .gara-gal {
+    background: #fff;
+    padding: 90px 30px 45px;
+  }
+
+  .gara-gal__row {
+    max-width: 1280px;
+    margin: 0 auto;
+  }
+
+  /* Avada: margin -half spacing so padded items align to row edges.
+   * Hide until packer runs — absolute items would otherwise stack at 0,0. */
+  .gara-gal__masonry {
+    position: relative;
+    margin: calc(var(--gara-gal-half) * -1);
+    min-height: 240px;
+    opacity: 0;
+    transition: opacity 0.35s ease;
+  }
+
+  .gara-gal__masonry.is-packed {
+    opacity: 1;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .gara-gal__masonry {
+      transition: none;
+    }
+  }
+
+  .gara-gal__item {
+    position: absolute;
+    top: 0;
+    left: 0;
+    box-sizing: border-box;
+    padding: var(--gara-gal-half);
+    margin: 0;
+    width: calc(100% / var(--gara-gal-cols));
+    visibility: hidden;
+  }
+
+  .gara-gal__masonry.is-packed .gara-gal__item {
+    visibility: visible;
+  }
+
+  .gara-gal__item.is-wide {
+    width: calc(100% / var(--gara-gal-cols) * 2);
+  }
+
+  .gara-gal__link {
+    display: block;
+    text-decoration: none;
+    color: inherit;
+    cursor: pointer;
+  }
+
+  .gara-gal__media {
+    position: relative;
+    display: block;
+    overflow: hidden;
+    background-color: #f2f2f2;
+    /* Aspect locked via padding-top — layout does not wait on image decode */
+    height: 0;
+  }
+
+  /* Visible cover img inside padding-top aspect box; zoomin via .gara-zoomin */
+  .gara-gal__media img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    max-width: none;
+  }
+
+  /* —— Lightbox: iLightbox metro-black + vertical path —— */
+  .gara-lb {
+    position: fixed;
+    inset: 0;
+    z-index: 100000;
+    color: #fff;
+  }
+
+  .gara-lb[hidden] {
+    display: none !important;
+  }
+
+  .gara-lb__overlay {
+    position: absolute;
+    inset: 0;
+    background: #000;
+    opacity: 0.93;
+  }
+
+  .gara-lb__toolbar {
+    position: absolute;
+    top: 8px;
+    left: 8px;
+    z-index: 5;
+    display: flex;
+    width: 54px;
+    height: 25px;
+  }
+
+  .gara-lb__tool {
+    width: 27px;
+    height: 25px;
+    padding: 0;
+    border: 0;
+    background: #000 center / 12px no-repeat;
+    cursor: pointer;
+    opacity: 0.85;
+  }
+
+  .gara-lb__tool:hover {
+    opacity: 1;
+  }
+
+  .gara-lb__close {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 12'%3E%3Cpath stroke='%23fff' stroke-width='1.5' d='M2 2l8 8M10 2L2 10'/%3E%3C/svg%3E");
+  }
+
+  .gara-lb__fs {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 12'%3E%3Cpath fill='none' stroke='%23fff' stroke-width='1.4' d='M2 4V2h2M8 2h2v2M10 8v2H8M4 10H2V8'/%3E%3C/svg%3E");
+  }
+
+  .gara-lb__stage {
+    position: absolute;
+    inset: 0 144px 0 0;
+    z-index: 2;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    pointer-events: none;
+  }
+
+  .gara-lb__holder {
+    margin: 0;
+    max-width: calc(100% - 48px);
+    max-height: calc(100% - 48px);
+    background: #000;
+    pointer-events: auto;
+  }
+
+  .gara-lb__img {
+    display: block;
+    max-width: min(100%, calc(100vw - 144px - 48px));
+    max-height: calc(100vh - 48px);
+    width: auto;
+    height: auto;
+    object-fit: contain;
+  }
+
+  /* Vertical path hit zones (top = prev, bottom = next) */
+  .gara-lb__zone {
+    position: absolute;
+    left: 0;
+    right: 144px;
+    z-index: 3;
+    border: 0;
+    padding: 0;
+    background: transparent;
+    cursor: pointer;
+  }
+
+  .gara-lb__zone--prev {
+    top: 0;
+    height: 100px;
+  }
+
+  .gara-lb__zone--next {
+    bottom: 0;
+    height: 100px;
+  }
+
+  .gara-lb__zone--prev::after,
+  .gara-lb__zone--next::after {
+    content: '';
+    position: absolute;
+    left: 50%;
+    width: 28px;
+    height: 28px;
+    margin-left: -14px;
+    background: center / 20px no-repeat;
+    opacity: 0.85;
+  }
+
+  .gara-lb__zone--prev::after {
+    top: 28px;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='none' stroke='%23fff' stroke-width='2' d='M6 14l6-6 6 6'/%3E%3C/svg%3E");
+  }
+
+  .gara-lb__zone--next::after {
+    bottom: 28px;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='none' stroke='%23fff' stroke-width='2' d='M6 10l6 6 6-6'/%3E%3C/svg%3E");
+  }
+
+  .gara-lb__zone:hover {
+    background: rgba(0, 0, 0, 0.35);
+  }
+
+  .gara-lb__thumbs {
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 4;
+    width: 144px;
+    overflow: hidden;
+  }
+
+  .gara-lb__thumbs-inner {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    padding: 0;
+    transition: transform 0.25s ease;
+  }
+
+  .gara-lb__thumb {
+    display: block;
+    width: 120px;
+    margin: 5px 12px;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    cursor: pointer;
+    opacity: 1;
+    overflow: hidden;
+  }
+
+  .gara-lb__thumb.is-active {
+    opacity: 0.6;
+  }
+
+  .gara-lb__thumb img {
+    display: block;
+    width: 100%;
+    height: auto;
+    vertical-align: top;
+  }
+
+  @media (max-width: 900px) {
+    .gara-gal {
+      padding: 60px 20px 40px;
+    }
+
+    .gara-gal__masonry {
+      --gara-gal-cols: 2;
+    }
+
+    .gara-gal__item.is-wide {
+      width: 100%;
+    }
+
+    .gara-lb__thumbs {
+      width: 96px;
+    }
+
+    .gara-lb__stage,
+    .gara-lb__zone {
+      right: 96px;
+    }
+
+    .gara-lb__thumb {
+      width: 80px;
+      margin: 4px 8px;
+    }
+
+    .gara-lb__img {
+      max-width: min(100%, calc(100vw - 96px - 24px));
+    }
+  }
+
+  @media (max-width: 600px) {
+    .gara-gal__masonry {
+      --gara-gal-cols: 1;
+    }
+
+    .gara-gal__item,
+    .gara-gal__item.is-wide {
+      width: 100%;
+    }
+
+    .gara-lb__thumbs {
+      display: none;
+    }
+
+    .gara-lb__stage,
+    .gara-lb__zone {
+      right: 0;
+    }
+
+    .gara-lb__img {
+      max-width: calc(100vw - 24px);
+    }
+  }
+</style>
+
+<script>
+  let masonryAbort: AbortController | null = null;
+  let lightboxAbort: AbortController | null = null;
+  let packRetries = 0;
+
+  function packMasonry(root: HTMLElement) {
+    const colsAttr = Number(root.dataset.cols || 3);
+    const styleCols = getComputedStyle(root).getPropertyValue('--gara-gal-cols').trim();
+    const cols = Math.max(1, Number(styleCols) || colsAttr);
+    const items = [...root.querySelectorAll<HTMLElement>('.gara-gal__item')];
+    if (!items.length) return false;
+
+    const containerW = root.clientWidth;
+    if (containerW < 1) return false;
+
+    const colW = containerW / cols;
+    const heights = Array.from({ length: cols }, () => 0);
+
+    // Set widths first so padding-top % resolves, then measure & place
+    for (const item of items) {
+      const span = Math.min(Number(item.dataset.span || 1), cols);
+      item.style.width = `${(span / cols) * 100}%`;
+    }
+
+    // Force layout once after all widths
+    void root.offsetHeight;
+
+    for (const item of items) {
+      const span = Math.min(Number(item.dataset.span || 1), cols);
+
+      let bestCol = 0;
+      let bestH = Infinity;
+      for (let c = 0; c <= cols - span; c++) {
+        let h = 0;
+        for (let s = 0; s < span; s++) h = Math.max(h, heights[c + s]);
+        if (h < bestH) {
+          bestH = h;
+          bestCol = c;
+        }
+      }
+
+      item.style.left = `${bestCol * colW}px`;
+      item.style.top = `${bestH}px`;
+
+      const itemH = item.offsetHeight;
+      for (let s = 0; s < span; s++) {
+        heights[bestCol + s] = bestH + itemH;
+      }
+    }
+
+    root.style.height = `${Math.max(0, ...heights)}px`;
+    root.classList.add('is-packed');
+    return true;
+  }
+
+  function initLightbox() {
+    lightboxAbort?.abort();
+    lightboxAbort = new AbortController();
+    const { signal } = lightboxAbort;
+
+    const root = document.querySelector<HTMLElement>('[data-gara-lb]');
+    if (!root) return;
+
+    // Reset leftover open state from a prior gallery page
+    root.hidden = true;
+    document.documentElement.style.overflow = '';
+
+    const img = root.querySelector<HTMLImageElement>('[data-gara-lb-img]');
+    const thumbsWrap = root.querySelector<HTMLElement>('[data-gara-lb-thumbs]');
+    const thumbs = [...root.querySelectorAll<HTMLElement>('[data-gara-lb-thumb]')];
+    const links = [...document.querySelectorAll<HTMLAnchorElement>('[data-gara-lightbox]')];
+    if (!img || !links.length) return;
+
+    let index = 0;
+
+    const centerThumbs = () => {
+      if (!thumbsWrap || !thumbs[index]) return;
+      const thumb = thumbs[index];
+      const wrapH = root.clientHeight;
+      const thumbTop = thumb.offsetTop;
+      const thumbH = thumb.offsetHeight;
+      const y = Math.min(
+        0,
+        Math.max(wrapH - thumbsWrap.scrollHeight, wrapH / 2 - thumbTop - thumbH / 2),
+      );
+      thumbsWrap.style.transform = `translateY(${y}px)`;
+    };
+
+    const show = (i: number) => {
+      index = (i + links.length) % links.length;
+      const link = links[index];
+      img.src = link.href;
+      img.alt = link.getAttribute('aria-label') || '';
+      thumbs.forEach((t, ti) => t.classList.toggle('is-active', ti === index));
+      root.hidden = false;
+      document.documentElement.style.overflow = 'hidden';
+      centerThumbs();
+    };
+
+    const close = () => {
+      root.hidden = true;
+      document.documentElement.style.overflow = '';
+      if (document.fullscreenElement) document.exitFullscreen().catch(() => {});
+    };
+
+    links.forEach((link, i) => {
+      link.addEventListener(
+        'click',
+        (e) => {
+          e.preventDefault();
+          show(i);
+        },
+        { signal },
+      );
+    });
+
+    thumbs.forEach((thumb) => {
+      thumb.addEventListener(
+        'click',
+        () => {
+          show(Number(thumb.dataset.garaLbThumb || 0));
+        },
+        { signal },
+      );
+    });
+
+    root.querySelectorAll('[data-gara-lb-close]').forEach((el) => {
+      el.addEventListener('click', close, { signal });
+    });
+    root
+      .querySelector('[data-gara-lb-prev]')
+      ?.addEventListener('click', () => show(index - 1), { signal });
+    root
+      .querySelector('[data-gara-lb-next]')
+      ?.addEventListener('click', () => show(index + 1), { signal });
+    root.querySelector('[data-gara-lb-fs]')?.addEventListener(
+      'click',
+      () => {
+        if (!document.fullscreenElement) root.requestFullscreen?.().catch(() => {});
+        else document.exitFullscreen().catch(() => {});
+      },
+      { signal },
+    );
+
+    window.addEventListener(
+      'keydown',
+      (e) => {
+        if (root.hidden) return;
+        if (e.key === 'Escape') close();
+        if (e.key === 'ArrowUp' || e.key === 'ArrowLeft') show(index - 1);
+        if (e.key === 'ArrowDown' || e.key === 'ArrowRight') show(index + 1);
+      },
+      { signal },
+    );
+
+    root.addEventListener(
+      'wheel',
+      (e) => {
+        if (root.hidden) return;
+        e.preventDefault();
+        if (e.deltaY > 20) show(index + 1);
+        else if (e.deltaY < -20) show(index - 1);
+      },
+      { passive: false, signal },
+    );
+
+    window.addEventListener(
+      'resize',
+      () => {
+        if (!root.hidden) centerThumbs();
+      },
+      { signal },
+    );
+  }
+
+  function initMasonry() {
+    masonryAbort?.abort();
+    masonryAbort = new AbortController();
+    const { signal } = masonryAbort;
+    packRetries = 0;
+
+    const roots = [...document.querySelectorAll<HTMLElement>('[data-gara-masonry]')];
+    if (!roots.length) return;
+
+    // Clear packed state so client navigations don't flash stale layout
+    for (const root of roots) {
+      root.classList.remove('is-packed');
+      delete root.dataset.observe;
+    }
+
+    const layout = () => {
+      let ok = true;
+      for (const root of roots) {
+        if (!document.contains(root)) return;
+        if (!packMasonry(root)) ok = false;
+      }
+      return ok;
+    };
+
+    const tryLayout = () => {
+      if (signal.aborted) return;
+      if (layout()) return;
+      if (packRetries++ > 30) return;
+      // View transitions can report width 0 for a few frames
+      requestAnimationFrame(tryLayout);
+    };
+
+    tryLayout();
+    requestAnimationFrame(() => {
+      tryLayout();
+      requestAnimationFrame(tryLayout);
+    });
+
+    if (document.fonts?.ready) {
+      document.fonts.ready.then(() => {
+        if (!signal.aborted) layout();
+      }).catch(() => {});
+    }
+
+    for (const root of roots) {
+      let lastW = root.clientWidth;
+      const target = root.parentElement ?? root;
+      const ro = new ResizeObserver(() => {
+        if (signal.aborted || !document.contains(root)) {
+          ro.disconnect();
+          return;
+        }
+        const w = root.clientWidth;
+        if (Math.abs(w - lastW) < 1) return;
+        lastW = w;
+        packMasonry(root);
+      });
+      ro.observe(target);
+      signal.addEventListener('abort', () => ro.disconnect());
+    }
+  }
+
+  function initGallery() {
+    initMasonry();
+    initLightbox();
+  }
+
+  initGallery();
+  document.addEventListener('astro:page-load', initGallery);
+</script>

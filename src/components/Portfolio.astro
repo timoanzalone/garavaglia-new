@@ -31,7 +31,7 @@ const base = portfolioBase(lang);
 ---
 
 <section id="portfolio" class="gara-cs">
-  <div class="gara-cs__header">
+  <div class="gara-cs__header gara-reveal">
     <div class="gara-cs__title-col">
       <h3 class="gara-cs__title">{t.title}</h3>
     </div>
@@ -42,10 +42,15 @@ const base = portfolioBase(lang);
 
   <div class="gara-cs__grid">
     {
-      featured.map((project) => (
+      featured.map((project, index) => (
         <a
           href={`${base}/${project.data.slug}`}
-          class="gara-cs__item"
+          class:list={[
+            'gara-cs__item',
+            'gara-reveal',
+            index % 3 === 1 && 'gara-reveal--delay-1',
+            index % 3 === 2 && 'gara-reveal--delay-2',
+          ]}
           style={`--gara-cs-color: ${project.data.color};`}
         >
           <div

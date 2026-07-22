@@ -71,6 +71,22 @@ const areas = defineCollection({
   }),
 });
 
+const caseStudySection = z.discriminatedUnion('type', [
+  z.object({
+    type: z.literal('gallery'),
+    images: z.array(
+      z.object({
+        src: z.string(),
+        alt: z.string(),
+      }),
+    ),
+  }),
+  z.object({
+    type: z.literal('text'),
+    html: z.string(),
+  }),
+]);
+
 const caseStudies = defineCollection({
   loader: glob({
     pattern: '**/*.{md,mdx}',
@@ -81,6 +97,7 @@ const caseStudies = defineCollection({
     slug: z.string(),
     lang: z.enum(['it', 'en']),
     title: z.string(),
+    metaTitle: z.string().optional(),
     category: z.string(),
     color: z.string(),
     image: z.string(),
@@ -89,7 +106,45 @@ const caseStudies = defineCollection({
     excerpt: z.string().optional(),
     featured: z.boolean().default(false),
     order: z.number().default(100),
+    hero: z
+      .object({
+        backgroundImage: z.string(),
+        backgroundPosition: z.string().default('center top'),
+      })
+      .optional(),
+    relatedTitle: z.string().optional(),
+    sections: z.array(caseStudySection).default([]),
   }),
 });
 
-export const collections = { areas, caseStudies };
+const galleries = defineCollection({
+  loader: glob({
+    pattern: '**/*.{md,mdx}',
+    base: './src/content/galleries',
+    generateId: ({ entry }) => entry.replace(/\.(md|mdx)$/, ''),
+  }),
+  schema: z.object({
+    /** Route key: index | amusement | exhibition | deco-show | visual-mkt | luxury-sculpture */
+    slug: z.string(),
+    lang: z.enum(['it', 'en']),
+    title: z.string(),
+    metaTitle: z.string().optional(),
+    metaDescription: z.string().optional(),
+    /** Avada fusion-grid-N — 3 for categories, 4 for /gallery index */
+    columns: z.number().default(3),
+    columnSpacing: z.number().default(10),
+    widthDouble: z.number().default(2000),
+    images: z.array(
+      z.object({
+        src: z.string(),
+        alt: z.string().default(''),
+        width: z.number(),
+        height: z.number(),
+        /** Avada masonry cell: grid | portrait | landscape | both */
+        orientation: z.enum(['grid', 'portrait', 'landscape', 'both']),
+      }),
+    ),
+  }),
+});
+
+export const collections = { areas, caseStudies, galleries };

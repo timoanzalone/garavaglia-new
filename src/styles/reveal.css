@@ -1,0 +1,47 @@
+/*
+ * Scroll-reveal — opacity + translateY only (no layout shift).
+ * Activated by .is-in from src/scripts/reveal.ts
+ */
+@media (prefers-reduced-motion: no-preference) {
+  .gara-reveal {
+    opacity: 0;
+    transform: translate3d(0, var(--gara-reveal-distance), 0);
+    transition:
+      opacity var(--gara-duration-reveal) var(--gara-ease),
+      transform var(--gara-duration-reveal) var(--gara-ease);
+    will-change: opacity, transform;
+  }
+
+  .gara-reveal.is-in {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+
+  .gara-reveal--delay-1 {
+    transition-delay: 0.08s;
+  }
+
+  .gara-reveal--delay-2 {
+    transition-delay: 0.16s;
+  }
+
+  .gara-reveal--delay-3 {
+    transition-delay: 0.24s;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .gara-reveal {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* Soften Astro view-transition fades when reduced motion is on */
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-group(*),
+  ::view-transition-old(*),
+  ::view-transition-new(*) {
+    animation: none !important;
+  }
+}

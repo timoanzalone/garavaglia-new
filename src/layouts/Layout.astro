@@ -1,4 +1,5 @@
 ---
+import { ClientRouter } from 'astro:transitions';
 import { switchLocalePath, t, type Locale } from '../i18n';
 
 interface Props {
@@ -28,9 +29,10 @@ const selfPath = Astro.url.pathname;
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Open+Sans:wght@400;600;700&family=Raleway:wght@400;500;600;700&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Open+Sans:wght@400;600;700&family=PT+Sans:wght@400;700&family=Raleway:wght@400;500;600;700&display=swap"
       rel="stylesheet"
     />
+    <ClientRouter />
   </head>
   <body class="min-h-screen antialiased">
     <slot />
@@ -41,3 +43,15 @@ const selfPath = Astro.url.pathname;
   /* global design tokens + shared utilities (incl. .gara-zoomin) */
   @import '../styles/global.css';
 </style>
+
+<script>
+  import { initReveal } from '../scripts/reveal';
+  import { initParallax } from '../scripts/parallax';
+
+  function bootMotion() {
+    initReveal();
+    initParallax();
+  }
+
+  document.addEventListener('astro:page-load', bootMotion);
+</script>

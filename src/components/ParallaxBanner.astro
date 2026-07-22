@@ -1,10 +1,10 @@
 ---
 /**
  * Area banner — measured from garavaglia.test @ 1920, 2026-07-21
- * Light refresh: subtle hover scale + brightness on the background.
+ * Soft scroll parallax on the background + hover scale/brightness.
  *
  * Measured (5 home banners, all fusion-parallax-none):
- * - Full-bleed bg: cover, no-repeat; no dark overlay; no parallax
+ * - Full-bleed bg: cover, no-repeat; no dark overlay
  * - Section pad L/R 30px; margin-bottom 40px
  * - Per-banner pad T/B + background-position (see site.ts)
  * - Logo in 1280px row, left-aligned, natural px size
@@ -35,10 +35,10 @@ const {
 
 <a
   href={linkUrl}
-  class="gara-banner"
+  class="gara-banner gara-reveal"
   style={`--gara-banner-bg: url('${backgroundImage}'); --gara-banner-pos: ${backgroundPosition}; padding: ${padding};`}
 >
-  <span class="gara-banner__bg" aria-hidden="true"></span>
+  <span class="gara-banner__bg" data-gara-parallax aria-hidden="true"></span>
   <div class="gara-banner__row">
     <img
       class="gara-banner__logo"
@@ -65,20 +65,23 @@ const {
 
   .gara-banner__bg {
     position: absolute;
-    inset: 0;
+    /* Extra bleed so soft parallax never shows edges */
+    inset: -10% 0;
     background-image: var(--gara-banner-bg);
     background-position: var(--gara-banner-pos);
     background-size: cover;
     background-repeat: no-repeat;
+    transform: translate3d(0, var(--gara-parallax-y, 0px), 0) scale(1);
     transition:
       transform var(--gara-duration) var(--gara-ease),
       filter var(--gara-duration) var(--gara-ease);
     z-index: 0;
+    will-change: transform;
   }
 
   .gara-banner:hover .gara-banner__bg,
   .gara-banner:focus-visible .gara-banner__bg {
-    transform: scale(1.03);
+    transform: translate3d(0, var(--gara-parallax-y, 0px), 0) scale(1.03);
     filter: brightness(1.06);
   }
 
@@ -109,7 +112,10 @@ const {
 
   @media (prefers-reduced-motion: reduce) {
     .gara-banner__bg {
+      inset: 0;
       transition: none;
+      transform: none;
+      will-change: auto;
     }
 
     .gara-banner:hover .gara-banner__bg,

@@ -1,0 +1,166 @@
+---
+/**
+ * Green & School landing — measured from garavaglia.test/green-school/ @ 1920, 2026-07-22
+ *
+ * Stack:
+ * 1. Hero (hundred-percent-height + center-content):
+ *    - WP: spacer under transparent header + hero h 1080, margin-bottom 80,
+ *      bg cover / 50% 50% / fixed (immagine-sfondo.jpg; info panel baked into image)
+ *    - Rebuild: sticky header in flow → hero calc(100vh − 84), mb 80; same paint
+ *    - h1 centered: Raleway 50 / 70 / 400 / #fff
+ * 2. Body: pad 0 30; row max 1280; Open Sans 15 / 25.5 / #747474; p mb 20
+ * 3. Gallery: margin 45 0; full-bleed 3-col gap 0; each 640×853; .gara-zoomin
+ *    Order L→R: vert-1, vert-3, vert-2
+ */
+import type { Lang } from '../data/site';
+import { greenSchoolContent } from '../data/greenSchool';
+
+interface Props {
+  lang?: Lang;
+}
+
+const { lang = 'it' } = Astro.props;
+const c = greenSchoolContent[lang];
+---
+
+<main class="gara-gs">
+  <section
+    class="gara-gs__hero"
+    style={`background-image: url('${c.heroImage}');`}
+    aria-label={c.heroHeading}
+  >
+    <h1 class="gara-gs__hero-title">{c.heroHeading}</h1>
+  </section>
+
+  <section class="gara-gs__body">
+    <div class="gara-gs__row" set:html={c.bodyHtml} />
+  </section>
+
+  <section class="gara-gs__gallery" aria-label="Gallery">
+    <div class="gara-gs__gallery-row">
+      {
+        c.gallery.map((image, index) => (
+          <figure class="gara-gs__figure gara-zoomin">
+            <img
+              src={image.src}
+              alt={image.alt}
+              width="768"
+              height="1024"
+              loading={index === 0 ? 'eager' : 'lazy'}
+              decoding="async"
+            />
+          </figure>
+        ))
+      }
+    </div>
+  </section>
+</main>
+
+<style>
+  .gara-gs {
+    background: #fff;
+  }
+
+  /* —— Hero —— */
+  .gara-gs__hero {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: calc(100vh - 84px);
+    min-height: 480px;
+    margin: 0 0 80px;
+    overflow: hidden;
+    background-color: #fff;
+    background-position: 50% 50%;
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+  }
+
+  .gara-gs__hero-title {
+    margin: 0;
+    width: 100%;
+    padding: 0 30px;
+    font-family: Raleway, Arial, Helvetica, sans-serif;
+    font-size: 50px;
+    font-weight: 400;
+    line-height: 70px;
+    letter-spacing: normal;
+    color: #fff;
+    text-align: center;
+  }
+
+  /* —— Body —— */
+  .gara-gs__body {
+    padding: 0 30px;
+  }
+
+  .gara-gs__row {
+    max-width: 1280px;
+    margin: 0 auto;
+    font-family: 'Open Sans', Arial, Helvetica, sans-serif;
+    font-size: 15px;
+    font-weight: 400;
+    line-height: 25.5px;
+    color: #747474;
+  }
+
+  .gara-gs__row :global(p) {
+    margin: 0 0 20px;
+  }
+
+  .gara-gs__row :global(p:last-child) {
+    margin-bottom: 0;
+  }
+
+  /* —— Gallery —— */
+  .gara-gs__gallery {
+    margin: 45px 0;
+  }
+
+  .gara-gs__gallery-row {
+    display: flex;
+    flex-wrap: wrap;
+    width: 100%;
+  }
+
+  .gara-gs__figure {
+    margin: 0;
+    width: 33.3333%;
+    overflow: hidden;
+    line-height: 0;
+  }
+
+  .gara-gs__figure img {
+    display: block;
+    width: 100%;
+    height: auto;
+    aspect-ratio: 640 / 853;
+    object-fit: cover;
+  }
+
+  @media (max-width: 800px) {
+    .gara-gs__hero {
+      background-attachment: scroll;
+      height: 70vh;
+      min-height: 360px;
+    }
+
+    .gara-gs__hero-title {
+      font-size: 36px;
+      line-height: 50px;
+    }
+
+    .gara-gs__figure {
+      width: 100%;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .gara-gs__hero {
+      background-attachment: scroll;
+    }
+  }
+</style>

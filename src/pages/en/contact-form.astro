@@ -1,0 +1,15 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import Header from '../../components/Header.astro';
+import Footer from '../../components/Footer.astro';
+import ContactFormPage from '../../components/ContactFormPage.astro';
+import { contactFormContent } from '../../data/contactForm';
+
+const { title, metaDescription } = contactFormContent.en;
+---
+
+<Layout title={title} description={metaDescription} lang="en">
+  <Header lang="en" />
+  <ContactFormPage lang="en" />
+  <Footer lang="en" />
+</Layout>

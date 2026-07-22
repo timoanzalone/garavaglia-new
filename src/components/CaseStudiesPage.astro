@@ -15,7 +15,7 @@ const heading = lang === 'it' ? 'Case Study' : 'Case Studies';
 ---
 
 <main class="gara-studies">
-  <section class="gara-studies__intro">
+  <section class="gara-studies__intro gara-reveal">
     <div class="gara-studies__row">
       <div class="gara-studies__col">
         <h1 class="gara-studies__title">{heading}</h1>
@@ -30,10 +30,15 @@ const heading = lang === 'it' ? 'Case Study' : 'Case Studies';
   <section class="gara-studies__grid-wrap">
     <div class="gara-studies__grid">
       {
-        studies.map((study) => (
+        studies.map((study, index) => (
           <a
             href={`${base}/${study.data.slug}`}
-            class="gara-studies__item"
+            class:list={[
+              'gara-studies__item',
+              'gara-reveal',
+              index % 3 === 1 && 'gara-reveal--delay-1',
+              index % 3 === 2 && 'gara-reveal--delay-2',
+            ]}
             style={`--gara-cs-color: ${study.data.color};`}
           >
             <div

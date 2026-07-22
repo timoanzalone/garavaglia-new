@@ -25,7 +25,7 @@ const t = introContent[lang];
 
 <section id="intro" class="gara-intro">
   <div class="gara-intro__row">
-    <div class="gara-intro__col">
+    <div class="gara-intro__col gara-reveal">
       <h2 class="gara-intro__title" set:html={t.titleHtml} />
       <span class="gara-intro__icons">
         <img
@@ -38,11 +38,11 @@ const t = introContent[lang];
       </span>
     </div>
 
-    <div class="gara-intro__col">
+    <div class="gara-intro__col gara-reveal gara-reveal--delay-1">
       {t.paragraphs.map((p) => <p class="gara-intro__p" set:html={p.html} />)}
     </div>
 
-    <div class="gara-intro__col gara-intro__col--last">
+    <div class="gara-intro__col gara-intro__col--last gara-reveal gara-reveal--delay-2">
       <p class="gara-intro__p">{t.areasTitle}</p>
       {
         t.areas.map((area) => (

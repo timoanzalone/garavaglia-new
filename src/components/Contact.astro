@@ -46,7 +46,7 @@ const mapSrc = `https://maps.google.com/maps?q=${c.map.lat},${c.map.lng}&z=${c.m
   </section>
 
   {/* Address + aerial */}
-  <section class="gara-contact__info">
+  <section class="gara-contact__info gara-reveal">
     <div class="gara-contact__row">
       <div class="gara-contact__col gara-contact__col--third">
         <h2 class="gara-contact__park-title" set:html={c.parkTitleHtml} />
@@ -70,7 +70,7 @@ const mapSrc = `https://maps.google.com/maps?q=${c.map.lat},${c.map.lng}&z=${c.m
   </section>
 
   {/* Map */}
-  <section class="gara-contact__map-wrap" aria-label="Map">
+  <section class="gara-contact__map-wrap gara-reveal" aria-label="Map">
     <div class="gara-contact__map" style={`height: ${c.map.height}px;`}>
       <iframe
         title="North Milan Business Park"

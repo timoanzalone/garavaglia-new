@@ -1,0 +1,29 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import Header from '../../components/Header.astro';
+import Footer from '../../components/Footer.astro';
+import CaseStudyPage from '../../components/CaseStudyPage.astro';
+import { getCaseStudies, getCaseStudy } from '../../lib/content';
+import { t } from '../../i18n';
+
+export async function getStaticPaths() {
+  const studies = await getCaseStudies('it');
+  return studies.map((entry) => ({
+    params: { slug: entry.data.slug },
+  }));
+}
+
+const { slug } = Astro.params;
+const entry = await getCaseStudy(slug!, 'it');
+if (!entry) throw new Error(`Missing case study it/${slug}`);
+---
+
+<Layout
+  title={entry.data.metaTitle ?? `${entry.data.title} - Garavaglia`}
+  description={t('it').metaDescription}
+  lang="it"
+>
+  <Header lang="it" />
+  <CaseStudyPage entry={entry} />
+  <Footer lang="it" />
+</Layout>

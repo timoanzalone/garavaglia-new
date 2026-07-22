@@ -3,6 +3,7 @@ import type { Locale } from '../i18n';
 
 export type AreaEntry = CollectionEntry<'areas'>;
 export type CaseStudyEntry = CollectionEntry<'caseStudies'>;
+export type GalleryEntry = CollectionEntry<'galleries'>;
 
 export async function getArea(area: string, lang: Locale): Promise<AreaEntry | undefined> {
   const all = await getCollection('areas');
@@ -57,6 +58,28 @@ export async function getCaseStudy(
 ): Promise<CaseStudyEntry | undefined> {
   const all = await getCollection(
     'caseStudies',
+    (entry) => entry.data.slug === slug && entry.data.lang === lang,
+  );
+  return all[0];
+}
+
+/** Same-category studies for the detail “related” grid (excludes current). */
+export async function getRelatedCaseStudies(
+  slug: string,
+  category: string,
+  lang: Locale,
+  limit = 8,
+): Promise<CaseStudyEntry[]> {
+  const all = await getCaseStudiesByCategory(category, lang);
+  return all.filter((e) => e.data.slug !== slug).slice(0, limit);
+}
+
+export async function getGallery(
+  slug: string,
+  lang: Locale,
+): Promise<GalleryEntry | undefined> {
+  const all = await getCollection(
+    'galleries',
     (entry) => entry.data.slug === slug && entry.data.lang === lang,
   );
   return all[0];

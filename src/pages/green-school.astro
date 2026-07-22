@@ -1,0 +1,15 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import GreenSchoolPage from '../components/GreenSchoolPage.astro';
+import { greenSchoolContent } from '../data/greenSchool';
+
+const { title, metaDescription } = greenSchoolContent.it;
+---
+
+<Layout title={title} description={metaDescription} lang="it">
+  <Header lang="it" />
+  <GreenSchoolPage lang="it" />
+  <Footer lang="it" />
+</Layout>

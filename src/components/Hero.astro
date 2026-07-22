@@ -143,13 +143,24 @@ const heading = heroHeading[lang];
 </style>
 
 <script>
-  const root = document.getElementById('hero-slider');
-  if (root) {
+  let heroTimer = 0;
+  let heroAbort: AbortController | null = null;
+
+  function initHero() {
+    heroAbort?.abort();
+    heroAbort = null;
+    window.clearInterval(heroTimer);
+    heroTimer = 0;
+
+    const root = document.getElementById('hero-slider');
+    if (!root) return;
+
     const slides = [...root.querySelectorAll<HTMLElement>('.gara-hero__slide')];
     const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     let current = 0;
-    let timer = 0;
     let paused = false;
+    const abort = new AbortController();
+    heroAbort = abort;
 
     function show(index: number) {
       slides.forEach((slide, i) => {
@@ -165,30 +176,45 @@ const heading = heroHeading[lang];
     }
 
     function stop() {
-      window.clearInterval(timer);
-      timer = 0;
+      window.clearInterval(heroTimer);
+      heroTimer = 0;
     }
 
     function start() {
       if (reduceMotion || paused || document.hidden || slides.length < 2) return;
       stop();
-      timer = window.setInterval(next, 7000);
+      heroTimer = window.setInterval(next, 7000);
     }
 
     if (!reduceMotion) {
-      root.addEventListener('pointerenter', () => {
-        paused = true;
-        stop();
-      });
-      root.addEventListener('pointerleave', () => {
-        paused = false;
-        start();
-      });
-      document.addEventListener('visibilitychange', () => {
-        if (document.hidden) stop();
-        else start();
-      });
+      root.addEventListener(
+        'pointerenter',
+        () => {
+          paused = true;
+          stop();
+        },
+        { signal: abort.signal },
+      );
+      root.addEventListener(
+        'pointerleave',
+        () => {
+          paused = false;
+          start();
+        },
+        { signal: abort.signal },
+      );
+      document.addEventListener(
+        'visibilitychange',
+        () => {
+          if (document.hidden) stop();
+          else start();
+        },
+        { signal: abort.signal },
+      );
       start();
     }
   }
+
+  initHero();
+  document.addEventListener('astro:page-load', initHero);
 </script>

@@ -1,0 +1,417 @@
+---
+/**
+ * Single case study — measured from garavaglia.test/portfolio/avalon/ @ 1920, 2026-07-22
+ *
+ * Section 1 — Hero (OK): h 996, gap→intro 80, bg cover / 50% 0% / fixed
+ *
+ * Section 2 — Intro (OK): pad 0 30; row 1280; 1/3+2/3 gutter 51;
+ *   h1 Raleway 36/50.4 #333; sep 12px color max 270 m15; body 15/25.5 #747474
+ *
+ * Section 3 — Gallery + mid text:
+ * - gallery FW: margin 45 0, pad 0, full-bleed 3-col gap 0
+ * - each col/img: 640×853, figure margin 0 0 20; hover-type-zoomin
+ * - gaps (bbox): intro→gal1 45; gal1→mid 50; mid→gal2 45
+ * - mid text: margin-top 50, pad 0 30; p Open Sans 15/25.5 #747474, max 1280
+ */
+import { render } from 'astro:content';
+import {
+  getRelatedCaseStudies,
+  type CaseStudyEntry,
+} from '../lib/content';
+import { portfolioBase, t } from '../i18n';
+
+interface Props {
+  entry: CaseStudyEntry;
+}
+
+const { entry } = Astro.props;
+const {
+  slug,
+  lang,
+  title,
+  category,
+  color,
+  place,
+  client,
+  hero,
+  sections = [],
+  relatedTitle,
+} = entry.data;
+
+const labels = t(lang);
+const { Content } = await render(entry);
+const related = await getRelatedCaseStudies(slug, category, lang);
+const base = portfolioBase(lang);
+
+const relatedHeading =
+  relatedTitle ||
+  (lang === 'it' ? `Altre Case Study ${category}` : `${category} Case Studies`);
+---
+
+<main class="gara-csd" style={`--gara-cs-color: ${color};`}>
+  {
+    hero && (
+      <section
+        class="gara-csd__hero"
+        style={`background-image: url('${hero.backgroundImage}'); background-position: ${hero.backgroundPosition};`}
+        aria-label={title}
+      />
+    )
+  }
+
+  <section class="gara-csd__intro gara-reveal">
+    <div class="gara-csd__intro-row">
+      <div class="gara-csd__intro-meta">
+        <h1 class="gara-csd__title">{title}</h1>
+        <div class="gara-csd__sep" aria-hidden="true" />
+        {category && <p class="gara-csd__category">{category}</p>}
+        {/* WP always renders Luogo/Cliente; values sit after the bold label when present */}
+        <p class="gara-csd__meta">
+          <strong>{labels.place}</strong>
+          {place ? ` ${place}` : null}
+          <br />
+          <strong>{labels.client}</strong>
+          {client ? ` ${client}` : null}
+        </p>
+      </div>
+      <div class="gara-csd__intro-body">
+        <div class="gara-csd__prose">
+          <Content />
+        </div>
+      </div>
+    </div>
+  </section>
+
+  {
+    sections.map((section) =>
+      section.type === 'gallery' ? (
+        <section class="gara-csd__gallery">
+          <div class="gara-csd__gallery-row">
+            {section.images.map((image, index) => (
+              <figure
+                class:list={[
+                  'gara-csd__figure',
+                  'gara-zoomin',
+                  'gara-reveal',
+                  index % 3 === 1 && 'gara-reveal--delay-1',
+                  index % 3 === 2 && 'gara-reveal--delay-2',
+                ]}
+              >
+                <img
+                  src={image.src}
+                  alt={image.alt}
+                  loading={index < 3 ? 'eager' : 'lazy'}
+                  decoding="async"
+                />
+              </figure>
+            ))}
+          </div>
+        </section>
+      ) : (
+        <section class="gara-csd__text gara-reveal">
+          <div class="gara-csd__text-inner gara-csd__prose" set:html={section.html} />
+        </section>
+      ),
+    )
+  }
+
+  {
+    related.length > 0 && (
+      <section class="gara-csd__related">
+        <div class="gara-csd__related-head gara-reveal">
+          <h2 class="gara-csd__related-title">{relatedHeading}</h2>
+          <div class="gara-csd__sep gara-csd__sep--related" aria-hidden="true" />
+        </div>
+        <div class="gara-csd__related-grid">
+          {related.map((study, index) => (
+            <a
+              href={`${base}/${study.data.slug}`}
+              class:list={[
+                'gara-csd__item',
+                'gara-reveal',
+                index % 3 === 1 && 'gara-reveal--delay-1',
+                index % 3 === 2 && 'gara-reveal--delay-2',
+              ]}
+              style={`--gara-cs-color: ${study.data.color};`}
+            >
+              <div
+                class="gara-csd__media"
+                style={`background-image: url('${study.data.image}');`}
+              >
+                <div class="gara-csd__rollover">
+                  <h3 class="gara-csd__item-title">{study.data.title}</h3>
+                </div>
+              </div>
+            </a>
+          ))}
+        </div>
+      </section>
+    )
+  }
+</main>
+
+<style>
+  .gara-csd {
+    background: #fff;
+  }
+
+  /* Hero — WP hundred-percent-height + parallax-fixed @ 1920: h≈996, mb 80 */
+  .gara-csd__hero {
+    width: 100%;
+    height: calc(100vh - var(--gara-header-height, 84px));
+    min-height: 480px;
+    margin: 0 0 80px;
+    background-color: #fff;
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+  }
+
+  @media (max-width: 900px) {
+    .gara-csd__hero {
+      background-attachment: scroll;
+      min-height: 360px;
+      height: 56vh;
+      margin-bottom: 48px;
+    }
+  }
+
+  /* Intro — pad 0 30; 1/3 + 2/3 with 4% gutter */
+  .gara-csd__intro {
+    padding: 0 30px;
+  }
+
+  .gara-csd__intro-row {
+    max-width: 1280px;
+    margin: 0 auto;
+    display: flex;
+    flex-wrap: wrap;
+  }
+
+  .gara-csd__intro-meta {
+    width: calc(33.33% - (4% * 0.3333));
+    margin: 0 4% 20px 0;
+  }
+
+  .gara-csd__intro-body {
+    width: calc(66.66% - (4% * 0.6666));
+    margin: 0 0 20px;
+  }
+
+  .gara-csd__title {
+    margin: 0;
+    padding: 0;
+    font-family: var(--gara-font-heading);
+    font-size: 36px;
+    font-weight: 400;
+    line-height: 50.4px;
+    color: #333;
+  }
+
+  .gara-csd__sep {
+    max-width: 270px;
+    height: 0;
+    margin: 15px 0;
+    border: 0;
+    border-top: 12px solid var(--gara-cs-color, #96c222);
+  }
+
+  .gara-csd__sep--related {
+    margin: 0 0 32px;
+  }
+
+  .gara-csd__category,
+  .gara-csd__meta {
+    margin: 0 0 20px;
+    font-family: var(--gara-font-body);
+    font-size: 15px;
+    font-weight: 400;
+    line-height: 25.5px;
+    color: #747474;
+  }
+
+  .gara-csd__meta strong {
+    font-weight: 700;
+    color: #747474;
+  }
+
+  .gara-csd__prose {
+    font-family: var(--gara-font-body);
+    font-size: 15px;
+    font-weight: 400;
+    line-height: 25.5px;
+    color: #747474;
+  }
+
+  .gara-csd__prose :global(p) {
+    margin: 0 0 20px;
+  }
+
+  .gara-csd__prose :global(a) {
+    color: var(--gara-cs-color, #96c222);
+  }
+
+  .gara-csd__prose :global(strong),
+  .gara-csd__prose :global(b) {
+    font-weight: 700;
+  }
+
+  /* Gallery — full-bleed 3-col, no gap; WP margin 45 0 */
+  .gara-csd__gallery {
+    margin: 45px 0;
+  }
+
+  .gara-csd__gallery-row {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0;
+  }
+
+  .gara-csd__figure {
+    margin: 0 0 20px;
+    width: 100%;
+  }
+
+  .gara-csd__figure img {
+    width: 100%;
+    height: auto;
+    vertical-align: middle;
+  }
+
+  /* Mid / trailing text — pad 30, mt 50 */
+  .gara-csd__text {
+    padding: 0 30px;
+    margin: 50px 0 0;
+  }
+
+  .gara-csd__text-inner {
+    max-width: 1280px;
+    margin: 0 auto;
+  }
+
+  /* Related — mt 60, pad 30; h3 30/45; grid like area projects */
+  .gara-csd__related {
+    margin: 60px 0 0;
+    padding: 0 30px 80px;
+  }
+
+  .gara-csd__related-head {
+    max-width: 1280px;
+    margin: 0 auto;
+  }
+
+  .gara-csd__related-title {
+    margin: 0;
+    padding: 0;
+    font-family: var(--gara-font-heading);
+    font-size: 30px;
+    font-weight: 400;
+    line-height: 45px;
+    color: #333;
+  }
+
+  .gara-csd__related-grid {
+    max-width: 1280px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 30px;
+  }
+
+  .gara-csd__item {
+    display: block;
+    text-decoration: none;
+    overflow: hidden;
+  }
+
+  .gara-csd__media {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 407 / 334;
+    background-position: 50% 50%;
+    background-size: cover;
+    background-repeat: no-repeat;
+    overflow: hidden;
+  }
+
+  .gara-csd__rollover {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 10px;
+    background-color: var(--gara-cs-color, #96c222);
+    opacity: 0;
+    transform: translateY(100%);
+    transition:
+      opacity var(--gara-duration, 0.35s) var(--gara-ease, ease),
+      transform var(--gara-duration, 0.35s) var(--gara-ease, ease);
+  }
+
+  .gara-csd__item:hover .gara-csd__rollover,
+  .gara-csd__item:focus-visible .gara-csd__rollover {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  .gara-csd__item-title {
+    margin: 10px 0 3px;
+    padding: 0;
+    font-family: var(--gara-font-heading);
+    font-size: 24px;
+    font-weight: 400;
+    line-height: 36px;
+    color: #fff;
+    text-align: center;
+  }
+
+  @media (hover: none) {
+    .gara-csd__rollover {
+      inset: auto 0 0;
+      justify-content: flex-end;
+      padding: 12px 14px;
+      opacity: 1;
+      transform: none;
+      background: linear-gradient(
+        to top,
+        color-mix(in srgb, var(--gara-cs-color, #96c222) 92%, #000 8%),
+        color-mix(in srgb, var(--gara-cs-color, #96c222) 75%, transparent)
+      );
+    }
+
+    .gara-csd__item-title {
+      font-size: 18px;
+      line-height: 26px;
+      margin: 0;
+    }
+  }
+
+  @media (max-width: 900px) {
+    .gara-csd__intro-meta,
+    .gara-csd__intro-body {
+      width: 100%;
+      margin-right: 0;
+    }
+
+    .gara-csd__gallery-row {
+      grid-template-columns: 1fr;
+    }
+
+    .gara-csd__related-grid {
+      grid-template-columns: repeat(2, 1fr);
+      gap: 20px;
+    }
+  }
+
+  @media (max-width: 600px) {
+    .gara-csd__related-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .gara-csd__title {
+      font-size: 28px;
+      line-height: 1.3;
+    }
+  }
+</style>

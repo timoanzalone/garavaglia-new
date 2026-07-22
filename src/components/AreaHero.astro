@@ -5,7 +5,7 @@
  * Section (.fusion-fullwidth.bg-parallax-parent):
  * - h ≈ 556; padding 180px 30px; overflow hidden
  * - bg via .parallax-inner: Image cover, position center bottom
- *   (WP uses fusion-parallax-up; resting frame matched statically here)
+ * - Soft scroll parallax (noticeable refresh)
  * - row max-width 1280
  * - logo in 1/2 col (~614): Amusement@2x.png displayed 412×176
  */
@@ -36,6 +36,7 @@ const {
 >
   <div
     class="gara-area-hero__bg"
+    data-gara-parallax
     style={`background-image: url('${backgroundImage}'); background-position: ${backgroundPosition};`}
     aria-hidden="true"
   />
@@ -64,12 +65,14 @@ const {
 
   .gara-area-hero__bg {
     position: absolute;
-    inset: 0;
+    inset: -10% 0;
     z-index: 0;
     background-color: #fff;
     background-size: cover;
     background-repeat: no-repeat;
     pointer-events: none;
+    transform: translate3d(0, var(--gara-parallax-y, 0px), 0);
+    will-change: transform;
   }
 
   .gara-area-hero__row {
@@ -106,6 +109,14 @@ const {
 
     .gara-area-hero__logo {
       max-width: 280px;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .gara-area-hero__bg {
+      inset: 0;
+      transform: none;
+      will-change: auto;
     }
   }
 </style>

@@ -24,6 +24,8 @@ export const routes = {
   },
   social: { it: '/social', en: '/en/social' },
   contact: { it: '/contatti', en: '/en/contact' },
+  contactForm: { it: '/contact-form', en: '/en/contact-form' },
+  greenSchool: { it: '/green-school', en: '/en/green-school' },
   cookie: { it: '/cookie', en: '/en/cookie' },
 } as const;
 

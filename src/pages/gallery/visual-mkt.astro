@@ -1,4 +1,16 @@
 ---
-import StubLayout from '../../layouts/StubLayout.astro';
+import Layout from '../../layouts/Layout.astro';
+import Header from '../../components/Header.astro';
+import Footer from '../../components/Footer.astro';
+import GalleryPage from '../../components/GalleryPage.astro';
+import { getGallery } from '../../lib/content';
+
+const entry = await getGallery('visual-mkt', 'it');
+if (!entry) throw new Error('Missing galleries/it/visual-mkt content');
 ---
-<StubLayout title="Gallery — VISUAL MKT" lang="it" />
+
+<Layout title={entry.data.metaTitle ?? entry.data.title} lang="it">
+  <Header lang="it" />
+  <GalleryPage entry={entry} />
+  <Footer lang="it" />
+</Layout>

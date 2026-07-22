@@ -51,6 +51,7 @@ const base = portfolioBase(lang);
   <section
     class:list={[
       'gara-area__intro',
+      'gara-reveal',
       introLayout === 'two-col' && 'gara-area__intro--two',
     ]}
   >
@@ -86,7 +87,7 @@ const base = portfolioBase(lang);
   {
     quoteBar && (
       <section
-        class="gara-area__quote-bar"
+        class="gara-area__quote-bar gara-reveal"
         style={`background-color: ${quoteBg};`}
       >
         <blockquote class="gara-area__quote">
@@ -107,7 +108,7 @@ const base = portfolioBase(lang);
   {
     projects && (
       <section class="gara-area__projects">
-        <div class="gara-area__projects-header">
+        <div class="gara-area__projects-header gara-reveal">
           <div class="gara-area__projects-title-col">
             <h3 class="gara-area__projects-title">{projects.title}</h3>
           </div>
@@ -118,10 +119,15 @@ const base = portfolioBase(lang);
 
         {caseStudies.length > 0 && (
           <div class="gara-area__grid">
-            {caseStudies.map((project) => (
+            {caseStudies.map((project, index) => (
               <a
                 href={`${base}/${project.data.slug}`}
-                class="gara-area__item"
+                class:list={[
+                  'gara-area__item',
+                  'gara-reveal',
+                  index % 3 === 1 && 'gara-reveal--delay-1',
+                  index % 3 === 2 && 'gara-reveal--delay-2',
+                ]}
                 style={`--gara-cs-color: ${project.data.color};`}
               >
                 <div
@@ -143,10 +149,18 @@ const base = portfolioBase(lang);
   {
     events && (
       <section class="gara-area__events">
-        <h3 class="gara-area__events-title">{events.title}</h3>
+        <h3 class="gara-area__events-title gara-reveal">{events.title}</h3>
         <div class="gara-area__events-grid">
-          {events.images.map((img) => (
-            <div class="gara-area__event">
+          {events.images.map((img, index) => (
+            <div
+              class:list={[
+                'gara-area__event',
+                'gara-reveal',
+                index % 4 === 1 && 'gara-reveal--delay-1',
+                index % 4 === 2 && 'gara-reveal--delay-2',
+                index % 4 === 3 && 'gara-reveal--delay-3',
+              ]}
+            >
               <img
                 class="gara-area__event-img gara-zoomin"
                 src={img.src}
