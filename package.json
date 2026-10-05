@@ -1,16 +1,21 @@
 {
   "name": "garavaglia-new",
   "type": "module",
-  "version": "0.0.1",
+  "version": "1.0.0",
   "scripts": {
     "dev": "astro dev",
     "build": "astro build",
     "preview": "astro preview",
-    "astro": "astro"
+    "astro": "astro",
+    "pages:deploy": "npm run build && wrangler pages deploy dist --project-name=garavaglia"
   },
   "dependencies": {
+    "@astrojs/sitemap": "^3.7.3",
     "@tailwindcss/vite": "^4.1.18",
     "astro": "^5.16.12",
     "tailwindcss": "^4.1.18"
+  },
+  "devDependencies": {
+    "wrangler": "^4.42.0"
   }
 }

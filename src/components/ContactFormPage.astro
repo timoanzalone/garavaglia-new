@@ -6,15 +6,8 @@
  * IT columns: 1/6 spacer | 1/3 Contattaci | 1/3 Newsletter | 1/6 spacer (gutter ≈ 51)
  * EN columns: 1/3 spacer | 1/3 Contact us | 1/3 spacer
  *
- * h1: Raleway 50 / 70 / 400 / #333; title wrap margin-bottom 30; text-align center in col
- * labels: Open Sans 15 / 25.5 / #747474
- * inputs: Arial 13, h 40, pad 0 15, border 1px #d2d2d2, color #aaa9a9; p mb 20
- * textarea: h 150, pad 8 15
- * submit: bg #96c222, PT Sans 14 / uppercase, pad 13 29, h 45,
- *   color/border rgba(255,255,255,0.75)
- *
  * Newsletter → MagNews EmailSP (apgroup 106, list 1)
- * Contact → mailto:info@garavaglia.eu (no CF7 on static host)
+ * Contact → FormSubmit.co ajax → info@garavaglia.eu
  */
 import type { Lang } from '../data/site';
 import { contactFormContent } from '../data/contactForm';
@@ -26,6 +19,7 @@ interface Props {
 const { lang = 'it' } = Astro.props;
 const c = contactFormContent[lang];
 const formId = `gara-contact-form-${lang}`;
+const endpoint = `https://formsubmit.co/ajax/${c.contactTo}`;
 ---
 
 <main class="gara-cform">
@@ -42,8 +36,10 @@ const formId = `gara-contact-form-${lang}`;
               class="gara-cform__form"
               id={formId}
               data-contact-form
-              data-to={c.contactTo}
-              data-lang={lang}
+              data-endpoint={endpoint}
+              data-sending={c.status.sending}
+              data-success={c.status.success}
+              data-error={c.status.error}
               novalidate
             >
               {
@@ -69,10 +65,12 @@ const formId = `gara-contact-form-${lang}`;
                   </p>
                 ))
               }
+              {/* FormSubmit honeypot */}
+              <input type="text" name="_honey" class="gara-cform__honey" tabindex="-1" autocomplete="off" />
               <p class="gara-cform__field gara-cform__field--submit">
                 <button class="gara-cform__submit" type="submit">{c.contactSubmit}</button>
               </p>
-              <p class="gara-cform__status" hidden data-status />
+              <p class="gara-cform__status" hidden data-status role="status" aria-live="polite" />
             </form>
           </div>
           {
@@ -123,8 +121,10 @@ const formId = `gara-contact-form-${lang}`;
               class="gara-cform__form"
               id={formId}
               data-contact-form
-              data-to={c.contactTo}
-              data-lang={lang}
+              data-endpoint={endpoint}
+              data-sending={c.status.sending}
+              data-success={c.status.success}
+              data-error={c.status.error}
               novalidate
             >
               {
@@ -150,10 +150,11 @@ const formId = `gara-contact-form-${lang}`;
                   </p>
                 ))
               }
+              <input type="text" name="_honey" class="gara-cform__honey" tabindex="-1" autocomplete="off" />
               <p class="gara-cform__field gara-cform__field--submit">
                 <button class="gara-cform__submit" type="submit">{c.contactSubmit}</button>
               </p>
-              <p class="gara-cform__status" hidden data-status />
+              <p class="gara-cform__status" hidden data-status role="status" aria-live="polite" />
             </form>
           </div>
           <div class="gara-cform__spacer" aria-hidden="true" />
@@ -164,35 +165,76 @@ const formId = `gara-contact-form-${lang}`;
 </main>
 
 <script>
-  const form = document.querySelector<HTMLFormElement>('[data-contact-form]');
-  if (form) {
-    form.addEventListener('submit', (event) => {
+  function bindContactForm(form: HTMLFormElement) {
+    if (form.dataset.bound === '1') return;
+    form.dataset.bound = '1';
+
+    const status = form.querySelector<HTMLElement>('[data-status]');
+    const submit = form.querySelector<HTMLButtonElement>('button[type="submit"]');
+    const endpoint = form.dataset.endpoint;
+    if (!endpoint) return;
+
+    const setStatus = (message: string, kind: 'ok' | 'err' | 'busy') => {
+      if (!status) return;
+      status.hidden = false;
+      status.textContent = message;
+      status.dataset.kind = kind;
+    };
+
+    form.addEventListener('submit', async (event) => {
       event.preventDefault();
-      const to = form.dataset.to || 'info@garavaglia.eu';
+      if (!form.reportValidity()) return;
+
       const data = new FormData(form);
       const name = String(data.get('your-name') || '').trim();
       const email = String(data.get('your-email') || '').trim();
       const company = String(data.get('company') || '').trim();
       const message = String(data.get('your-message') || '').trim();
-      if (!name || !email || !company) {
-        form.reportValidity();
-        return;
-      }
-      const subject = encodeURIComponent(`Contact form — ${name}${company ? ` (${company})` : ''}`);
-      const body = encodeURIComponent(
-        [`Name: ${name}`, `Email: ${email}`, `Company: ${company}`, '', message].join('\n'),
-      );
-      window.location.href = `mailto:${to}?subject=${subject}&body=${body}`;
-      const status = form.querySelector<HTMLElement>('[data-status]');
-      if (status) {
-        status.hidden = false;
-        status.textContent =
-          form.dataset.lang === 'en'
-            ? 'Opening your email client…'
-            : 'Apertura del client di posta…';
+      const honey = String(data.get('_honey') || '');
+
+      if (honey) return;
+
+      if (submit) submit.disabled = true;
+      setStatus(form.dataset.sending || '…', 'busy');
+
+      try {
+        const res = await fetch(endpoint, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Accept: 'application/json',
+          },
+          body: JSON.stringify({
+            name,
+            email,
+            company,
+            message,
+            _replyto: email,
+            _subject: `Garavaglia contact — ${name}${company ? ` (${company})` : ''}`,
+            _template: 'table',
+            _captcha: 'false',
+          }),
+        });
+
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        const json = (await res.json().catch(() => ({}))) as { success?: string | boolean };
+        if (json.success === false) throw new Error('FormSubmit rejected');
+
+        form.reset();
+        setStatus(form.dataset.success || 'OK', 'ok');
+      } catch {
+        setStatus(form.dataset.error || 'Error', 'err');
+      } finally {
+        if (submit) submit.disabled = false;
       }
     });
   }
+
+  function boot() {
+    document.querySelectorAll<HTMLFormElement>('[data-contact-form]').forEach(bindContactForm);
+  }
+
+  document.addEventListener('astro:page-load', boot);
 </script>
 
 <style>
@@ -289,6 +331,15 @@ const formId = `gara-contact-form-${lang}`;
     border-color: #96c222;
   }
 
+  .gara-cform__honey {
+    position: absolute;
+    left: -9999px;
+    height: 0;
+    width: 0;
+    opacity: 0;
+    pointer-events: none;
+  }
+
   .gara-cform__submit {
     display: inline-block;
     box-sizing: border-box;
@@ -316,11 +367,24 @@ const formId = `gara-contact-form-${lang}`;
     color: #fff;
   }
 
+  .gara-cform__submit:disabled {
+    opacity: 0.65;
+    cursor: wait;
+  }
+
   .gara-cform__status {
     margin: 0 0 20px;
     font-family: 'Open Sans', Arial, Helvetica, sans-serif;
     font-size: 14px;
     color: #96c222;
+  }
+
+  .gara-cform__status[data-kind='err'] {
+    color: #c51a27;
+  }
+
+  .gara-cform__status[data-kind='busy'] {
+    color: #747474;
   }
 
   @media (max-width: 900px) {

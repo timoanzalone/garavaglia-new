@@ -4,6 +4,7 @@ import type { Lang } from './site';
  * Contact form page — measured from garavaglia.test/contact-form/ @ 1920, 2026-07-22
  * EN (garavaglia.test/en/contact-form/): contact column only, centered in 3×1/3 row.
  * Newsletter posts to MagNews / EmailSP (same endpoint as WP).
+ * Contattaci posts via FormSubmit.co ajax to contactTo.
  */
 export type ContactFormField = {
   name: string;
@@ -19,7 +20,13 @@ export type ContactFormContent = {
   contactHeading: string;
   contactFields: ContactFormField[];
   contactSubmit: string;
+  /** Destination inbox (FormSubmit.co ajax endpoint). */
   contactTo: string;
+  status: {
+    sending: string;
+    success: string;
+    error: string;
+  };
   newsletter?: {
     heading: string;
     emailLabel: string;
@@ -51,6 +58,11 @@ export const contactFormContent: Record<Lang, ContactFormContent> = {
     ],
     contactSubmit: 'Invia',
     contactTo: 'info@garavaglia.eu',
+    status: {
+      sending: 'Invio in corso…',
+      success: 'Messaggio inviato. Ti risponderemo al più presto.',
+      error: 'Invio non riuscito. Riprova o scrivi a info@garavaglia.eu.',
+    },
     newsletter: {
       heading: 'Newsletter',
       emailLabel: 'Email*',
@@ -79,6 +91,11 @@ export const contactFormContent: Record<Lang, ContactFormContent> = {
     ],
     contactSubmit: 'Submit',
     contactTo: 'info@garavaglia.eu',
+    status: {
+      sending: 'Sending…',
+      success: 'Message sent. We’ll get back to you soon.',
+      error: 'Could not send. Please try again or email info@garavaglia.eu.',
+    },
     layout: 'en-center',
   },
 };

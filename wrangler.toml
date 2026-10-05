@@ -1,0 +1,4 @@
+# Cloudflare Pages — static Astro site (no Workers adapter needed)
+name = "garavaglia"
+compatibility_date = "2026-10-05"
+pages_build_output_dir = "./dist"

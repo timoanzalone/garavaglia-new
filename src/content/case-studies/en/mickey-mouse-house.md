@@ -21,7 +21,7 @@ sections:
       - src: /portfolio/mickey-mouse-house/gallery-03.jpg
         alt: "Mickey Mouse House"
   - type: text
-    html: "<h4><strong>Brief</strong></h4><p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>"
+    html: "<h4><strong>Brief</strong></h4><p>A scenographic reproduction of the Mickey Mouse House from Disney parks, set up in the Toys Centre showroom in Genoa: a play and interactive-activity space with hand-carved and hand-painted sculptures in every detail.</p>"
   - type: gallery
     images:
       - src: /portfolio/mickey-mouse-house/gallery-04.jpg
@@ -32,6 +32,7 @@ sections:
         alt: "Mickey Mouse House"
 ---
 
-<p>The world of arts and crafts in one big scenographic space made of games and interactive activities. Mickey Mouse’s house is a special area set up in the showroom of the Toys Centre in Genoa.</p><p>It is an incredible reproduction of the Mickey Mouse House that is found in the Disney amusement parks. </p>
-<p>The project has been studied to take care and advantage of the imaginary appearance and at the same time create an important scenographic effect.</p><p>Our sculptures have been carved and manually painted in each and every detail of Mickey Mouse’s House taking good care of maintaining the brand that has made history in the Cartoon and entertainment world of animation.</p>
-
+<p>The world of arts and crafts in one big scenographic space made of games and interactive activities. Mickey Mouse’s house is a special area set up in the showroom of the Toys Centre in Genoa.</p>
+<p>It is an incredible reproduction of the Mickey Mouse House that is found in the Disney amusement parks.</p>
+<p>The project has been studied to take care and advantage of the imaginary appearance and at the same time create an important scenographic effect.</p>
+<p>Our sculptures have been carved and manually painted in each and every detail of Mickey Mouse’s House taking good care of maintaining the brand that has made history in the Cartoon and entertainment world of animation.</p>
