@@ -136,15 +136,37 @@ function navItemIsActive(item: NavItem): boolean {
         const active = navItemIsActive(item);
         return (
           <li>
-            <a
-              href={item.href}
-              class:list={{ 'is-active': active }}
-              aria-current={active ? 'page' : undefined}
-            >
-              {item.label}
-            </a>
+            {item.children ? (
+              <div class="gara-header__mobile-row">
+                <a
+                  href={item.href}
+                  class:list={{ 'is-active': active }}
+                  aria-current={active ? 'page' : undefined}
+                >
+                  {item.label}
+                </a>
+                <button
+                  type="button"
+                  class="gara-header__mobile-toggle"
+                  aria-expanded="false"
+                  aria-label={`${item.label}, ${labels.submenu}`}
+                >
+                  <svg width="9" height="6" viewBox="0 0 9 6" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                    <path d="M1 1.25L4.5 4.75L8 1.25" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
+                  </svg>
+                </button>
+              </div>
+            ) : (
+              <a
+                href={item.href}
+                class:list={{ 'is-active': active }}
+                aria-current={active ? 'page' : undefined}
+              >
+                {item.label}
+              </a>
+            )}
             {item.children && (
-              <ul>
+              <ul hidden>
                 {item.children.map((child) => (
                   <li><a href={child.href}>{child.label}</a></li>
                 ))}
@@ -345,7 +367,8 @@ function navItemIsActive(item: NavItem): boolean {
     padding: 0;
   }
 
-  .gara-header__mobile > ul > li > a {
+  .gara-header__mobile > ul > li > a,
+  .gara-header__mobile-row > a {
     display: block;
     padding: 14px 20px;
     font-family: Montserrat, Arial, Helvetica, sans-serif;
@@ -355,7 +378,42 @@ function navItemIsActive(item: NavItem): boolean {
     border-bottom: 1px solid #dadada;
   }
 
-  .gara-header__mobile > ul > li > a.is-active {
+  .gara-header__mobile-row {
+    display: flex;
+    align-items: stretch;
+    border-bottom: 1px solid #dadada;
+  }
+
+  .gara-header__mobile-row > a {
+    flex: 1;
+    min-width: 0;
+    border-bottom: 0;
+  }
+
+  .gara-header__mobile-toggle {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex: 0 0 48px;
+    width: 48px;
+    padding: 0;
+    border: 0;
+    border-left: 1px solid #dadada;
+    background: transparent;
+    color: #333;
+    cursor: pointer;
+  }
+
+  .gara-header__mobile-toggle svg {
+    transition: transform var(--gara-duration-fast) var(--gara-ease);
+  }
+
+  .gara-header__mobile-toggle[aria-expanded='true'] svg {
+    transform: rotate(180deg);
+  }
+
+  .gara-header__mobile > ul > li > a.is-active,
+  .gara-header__mobile-row > a.is-active {
     color: var(--gara-brand-dark);
     box-shadow: inset 3px 0 0 var(--gara-brand);
   }
@@ -394,7 +452,37 @@ function navItemIsActive(item: NavItem): boolean {
     }
     .gara-header__mobile:not([hidden]) {
       display: block;
+      position: absolute;
+      top: 100%;
+      left: 0;
+      right: 0;
+      max-height: calc(100vh - 84px);
+      max-height: calc(100dvh - 84px);
+      overflow-y: auto;
+      overscroll-behavior: contain;
+      -webkit-overflow-scrolling: touch;
+      z-index: 2;
     }
+  }
+
+  :global(html.is-menu-open) {
+    overflow: hidden;
+  }
+
+  :global(html.is-menu-open) body {
+    position: fixed;
+    left: 0;
+    right: 0;
+    width: 100%;
+    overflow: hidden;
+  }
+
+  :global(html.is-menu-open) .gara-header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    width: 100%;
   }
 
   /* clearfix */
@@ -418,24 +506,103 @@ function navItemIsActive(item: NavItem): boolean {
     const menu = document.getElementById('mobile-menu');
     if (!header) return;
 
+    document.documentElement.classList.remove('is-menu-open');
+    document.body.style.top = '';
+    delete document.body.dataset.scrollLock;
+
     function updateScrollState() {
-      header.classList.toggle('is-scrolled', window.scrollY > 8);
+      const locked = document.body.dataset.scrollLock;
+      const y = locked != null ? Number(locked) : window.scrollY;
+      header.classList.toggle('is-scrolled', y > 8);
+    }
+
+    function collapseSubmenus() {
+      menu?.querySelectorAll('.gara-header__mobile-toggle').forEach((toggle) => {
+        toggle.setAttribute('aria-expanded', 'false');
+        toggle.closest('li')?.querySelector('ul')?.setAttribute('hidden', '');
+      });
+    }
+
+    function lockPageScroll() {
+      const y = window.scrollY;
+      document.body.dataset.scrollLock = String(y);
+      document.body.style.top = `${-(y - header.offsetHeight)}px`;
+      document.documentElement.classList.add('is-menu-open');
+      updateScrollState();
+    }
+
+    function unlockPageScroll(restore: boolean) {
+      const y = Number(document.body.dataset.scrollLock ?? '0');
+      const hadLock = document.body.dataset.scrollLock != null;
+      document.documentElement.classList.remove('is-menu-open');
+      document.body.style.top = '';
+      delete document.body.dataset.scrollLock;
+      if (restore && hadLock) {
+        const root = document.documentElement;
+        const previous = root.style.scrollBehavior;
+        root.style.scrollBehavior = 'auto';
+        window.scrollTo(0, y);
+        root.style.scrollBehavior = previous;
+      }
+      updateScrollState();
+    }
+
+    function setMenuOpen(open: boolean) {
+      if (!menu || !btn) return;
+      if (open) {
+        menu.removeAttribute('hidden');
+        btn.setAttribute('aria-expanded', 'true');
+        lockPageScroll();
+      } else {
+        menu.setAttribute('hidden', '');
+        btn.setAttribute('aria-expanded', 'false');
+        unlockPageScroll(true);
+        collapseSubmenus();
+      }
+    }
+
+    function preventBackgroundScroll(event: Event) {
+      if (!menu || menu.hasAttribute('hidden')) return;
+      const target = event.target;
+      if (target instanceof Node && menu.contains(target)) {
+        if (!(event instanceof WheelEvent)) return;
+        const atTop = menu.scrollTop <= 0;
+        const atBottom = menu.scrollTop + menu.clientHeight >= menu.scrollHeight - 1;
+        if ((event.deltaY < 0 && atTop) || (event.deltaY > 0 && atBottom)) {
+          event.preventDefault();
+        }
+        return;
+      }
+      event.preventDefault();
     }
 
     updateScrollState();
     window.addEventListener('scroll', updateScrollState, { passive: true, signal });
 
-    btn?.addEventListener(
-      'click',
+    btn?.addEventListener('click', () => setMenuOpen(menu?.hasAttribute('hidden') ?? false), { signal });
+
+    menu?.querySelectorAll('.gara-header__mobile-toggle').forEach((toggle) => {
+      toggle.addEventListener(
+        'click',
+        () => {
+          const expanded = toggle.getAttribute('aria-expanded') === 'true';
+          const sub = toggle.closest('li')?.querySelector('ul');
+          toggle.setAttribute('aria-expanded', expanded ? 'false' : 'true');
+          if (expanded) sub?.setAttribute('hidden', '');
+          else sub?.removeAttribute('hidden');
+        },
+        { signal },
+      );
+    });
+
+    document.addEventListener('wheel', preventBackgroundScroll, { passive: false, signal });
+    document.addEventListener('touchmove', preventBackgroundScroll, { passive: false, signal });
+    document.addEventListener('astro:before-preparation', () => unlockPageScroll(false), { signal });
+
+    window.addEventListener(
+      'resize',
       () => {
-        const open = menu?.hasAttribute('hidden');
-        if (open) {
-          menu?.removeAttribute('hidden');
-          btn.setAttribute('aria-expanded', 'true');
-        } else {
-          menu?.setAttribute('hidden', '');
-          btn.setAttribute('aria-expanded', 'false');
-        }
+        if (window.innerWidth > 1099) setMenuOpen(false);
       },
       { signal },
     );

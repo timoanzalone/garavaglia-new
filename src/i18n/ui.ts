@@ -3,6 +3,7 @@ import type { Locale } from './config';
 type UiStrings = {
   mainMenu: string;
   menu: string;
+  submenu: string;
   previous: string;
   next: string;
   stubNote: string;
@@ -20,6 +21,7 @@ export const ui: Record<Locale, UiStrings> = {
   it: {
     mainMenu: 'Menu principale',
     menu: 'Menu',
+    submenu: 'Sottomenu',
     previous: 'Precedente',
     next: 'Successivo',
     stubNote: 'Pagina in costruzione — contenuto in arrivo dalla migrazione WordPress.',
@@ -35,6 +37,7 @@ export const ui: Record<Locale, UiStrings> = {
   en: {
     mainMenu: 'Main Menu',
     menu: 'Menu',
+    submenu: 'Submenu',
     previous: 'Previous',
     next: 'Next',
     stubNote: 'Page under construction — content coming from the WordPress migration.',
